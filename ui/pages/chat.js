@@ -1,32 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import chat_history from './api/chat_api';
 
 const ChatPage = () => {
+  const [chatHistory, setChatHistory] = useState([]);  
   const [currentMessage, setCurrentMessage] = useState('');
 
-  // 创建模拟的聊天记录
-  const [messages, setMessages] = useState([
-    '你好，公主殿下',
-    '你好，我是公主',
-    '今天天气不错',
-    '是的，很适合出去散步',
-    // 添加更多的聊天记录...
-  ]);
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const data = await chat_history();
+        console.log("Chat history:", data);
+        setChatHistory(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchChatHistory();
+  }, []);
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     // 在这里发送你的消息
     console.log(currentMessage);
     // 将新的消息添加到聊天记录中
-    setMessages([...messages, currentMessage]);
+    setChatHistory([...chatHistory, currentMessage]);
     setCurrentMessage('');
   };
 
   return (
     <Layout title="我们随便聊聊">
       <ul>
-        {messages.map((message, index) => (
-          <li key={index}>{message}</li>
+        {chatHistory.map(({ seq, user_id, text, timestamp }) => (
+          <li key={seq}>{ user_id }({timestamp}): {text}</li>
         ))}
       </ul>
       <form onSubmit={handleSubmit}>
