@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "wencheng"
+version = "0.1.0"
+description = "An agent base on GPT to create documents for you"
+authors = ["arcstep <43801@qq.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.109.0"
+langchain = "^0.1.0"
+langserve = "^0.0.39"
+langchain-openai = "^0.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
