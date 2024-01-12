@@ -1,0 +1,11 @@
+/* Layout.css */
+.layout {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+main.container {
+  /* 内容层样式 */
+  overflow: auto; /* 如果内容超出可视区域，显示滚动条 */
+}
