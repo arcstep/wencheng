@@ -16,7 +16,7 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          擅长写作，能读懂文档和网页，我是基于GPT4的智能助手。
+          会写作，会学习，我是基于GPT4的智能助手。
         </p>
 
         <div className={styles.grid}>
@@ -27,7 +27,7 @@ export default function Home() {
 
           <Link href="/ingest" className={styles.card}>
             <h3>投喂 &rarr;</h3>
-            <p>我的食物就是知识</p>
+            <p>我的食物就是新知识</p>
           </Link>
 
           <Link href="/writing" className={styles.card}>
@@ -38,7 +38,7 @@ export default function Home() {
           <Link href="/train" className={styles.card}>
             <h3>训练 &rarr;</h3>
             <p>
-              帮你理解和掌握新知识
+              帮你理解和掌握
             </p>
           </Link>
         </div>
