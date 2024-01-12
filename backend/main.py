@@ -9,10 +9,12 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from typing_extensions import TypedDict
-
+from langchain_core.globals import set_debug
 from langserve import add_routes
-
 from fastapi.middleware.cors import CORSMiddleware
+
+# 设置调试模式
+set_debug(True)
 
 # 加载 .env 到环境变量
 from dotenv import load_dotenv, find_dotenv
@@ -43,6 +45,17 @@ def _is_valid_identifier(value: str) -> bool:
     valid_characters = re.compile(r"^[a-zA-Z0-9-_]+$")
     return bool(valid_characters.match(value))
 
+def get_chat_history(base_dir_: str, session_id: str) -> FileChatMessageHistory:
+    """Get a chat history from a session ID."""
+    if not _is_valid_identifier(session_id):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Session ID `{session_id}` is not in a valid format. "
+            "Session ID must only contain alphanumeric characters, "
+            "hyphens, and underscores.",
+        )
+    file_path = f"{base_dir_}/{session_id}.json"
+    return FileChatMessageHistory(str(file_path))
 
 def create_session_factory(
     base_dir: Union[str, Path],
@@ -58,21 +71,9 @@ def create_session_factory(
     base_dir_ = Path(base_dir) if isinstance(base_dir, str) else base_dir
     if not base_dir_.exists():
         base_dir_.mkdir(parents=True)
-
-    def get_chat_history(session_id: str) -> FileChatMessageHistory:
-        """Get a chat history from a session ID."""
-        if not _is_valid_identifier(session_id):
-            raise HTTPException(
-                status_code=400,
-                detail=f"Session ID `{session_id}` is not in a valid format. "
-                "Session ID must only contain alphanumeric characters, "
-                "hyphens, and underscores.",
-            )
-        file_path = base_dir_ / f"{session_id}.json"
-        return FileChatMessageHistory(str(file_path))
-
-    return get_chat_history
-
+    def __get_chat_history(session_id: str) -> FileChatMessageHistory:
+        return get_chat_history(base_dir_, session_id)
+    return __get_chat_history
 
 app = FastAPI(
     title="LangChain Server",
@@ -91,7 +92,6 @@ prompt = ChatPromptTemplate.from_messages(
 
 chain = prompt | ChatOpenAI()
 
-
 class InputChat(TypedDict):
     """Input for the chat endpoint."""
 
@@ -105,23 +105,19 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="history",
 ).with_types(input_type=InputChat)
 
-
 add_routes(
     app,
     chain_with_history,
     path="/chat",
 )
 
-# 添加流式聊天历史记录查询的路由
-@app.get("/chat_history/{user_id}")
-async def get_chat_history(user_id: str):
-    # 根据user_id查询聊天历史记录的逻辑
+# 查询聊天历史记录的接口
+@app.get("/chat_history/{user_id}/{session_id}")
+async def get_chat_history_by_session_id(user_id: str, session_id: str):
+    # 根据session_id查询聊天历史记录的逻辑
     # 返回聊天历史记录
-    return {"user_id": user_id, "history": [
-        {"seq":1, "user_id": user_id, "text": "你好!", "timestamp": "2021-01-01 00:00:00"},
-        {"seq":2, "user_id": "文成公主", "text": "你也好!", "timestamp": "2021-01-01 00:00:01"},
-        {"seq":3, "user_id": user_id, "text": "我们聊聊!", "timestamp": "2021-01-01 00:00:02"},    
-    ]}
+    hist = get_chat_history("chat_histories", session_id)
+    return hist.messages
 
 if __name__ == "__main__":
     import uvicorn
