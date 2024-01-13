@@ -8,7 +8,7 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
 
   function handleCopyClick(e) {
     e.stopPropagation();
-    navigator.clipboard.writeText(message.text)
+    navigator.clipboard.writeText(message.content)
       .then(() => {
         console.log('Text copied to clipboard');
       })
@@ -27,6 +27,17 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
     setIsExpanded(!isExpanded);
   }
 
+  const getSenderIcon = (type) => {
+    switch (type) {
+      case 'ai':
+        return '/images/wencheng.png';
+      case 'human':
+        return '/images/you.jpeg';
+      default:
+        return '/images/wencheng.png';
+    }
+  }
+
   return (
     <div className={[className, styles.chatMessage].join(" ")} onClick={onClick}>
       <div className={styles.messageActions}>
@@ -40,24 +51,10 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
           <FaInfo />
         </button>
       </div>
-      <img className={styles.avatar} src={message.senderIcon} alt={message.senderName} />
+      <img className={styles.avatar} src={getSenderIcon(message.type)} alt={message.type} />
       <div className={styles.messageContent}>
-        {isExpanded && (
-          <strong className={styles.senderName}>{message.senderName}</strong>
-        )}
-        <div className={styles.messageText} dangerouslySetInnerHTML={{ __html: marked(message.text) }} />
-        {isExpanded && (
-          <>
-            {message.quotes && (
-              <ul className={styles.quoteList}>
-                {message.quotes.map((quote, index) => (
-                  <li key={index}>{quote}</li>
-                ))}
-              </ul>
-            )}
-            <span className={styles.timestamp}>{new Date(message.timestamp).toLocaleString()}</span>
-          </>
-        )}
+        <strong className={styles.senderName}>{message.type}</strong>
+        <div className={styles.messageText} dangerouslySetInnerHTML={{ __html: marked(message.content || "") }} />
       </div>
     </div>
   );
