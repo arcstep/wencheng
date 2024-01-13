@@ -49,5 +49,3 @@ add_routes(app, with_chat_history(chain), path="/chat")
 @app.get("/chat_history/{session_id}")
 async def chat_history(session_id: str):
     return get_chat_history_by_session_id(session_id)
-
-

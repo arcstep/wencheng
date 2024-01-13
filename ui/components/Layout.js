@@ -1,7 +1,7 @@
 // components/Layout.js
 import React from 'react';
 import Link from 'next/link';
-import styles from '../styles/Layout.module.css'
+import styles from './Layout.module.css'
 
 const Layout = ({ children, title }) => {
   return (

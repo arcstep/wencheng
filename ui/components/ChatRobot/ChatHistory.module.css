@@ -1,0 +1,6 @@
+.chatHistory {
+  padding: 1em;
+  background-color: #f8f8f8;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
