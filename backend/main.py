@@ -42,8 +42,18 @@ prompt = ChatPromptTemplate.from_messages(
         ("human", "{human_input}"),
     ]
 )
-chain = prompt | ChatOpenAI()
-add_routes(app, with_chat_history(chain), path="/chat")
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo-16k",
+    streaming=True,
+    temperature=0,
+)
+
+add_routes(
+    app,
+    with_chat_history(prompt | llm),
+    path="/chat",
+    config_keys=["metadata", "configurable"]
+)
 
 # 查询聊天历史记录的接口
 @app.get("/chat_history/{session_id}")
