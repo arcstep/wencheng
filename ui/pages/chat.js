@@ -7,6 +7,7 @@ const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState([]);  
   const [currentMessage, setCurrentMessage] = useState('');
   const [streamRespondingMessage, setStreamRespondingMessage] = useState([]);
+  const base_url = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -31,9 +32,7 @@ const ChatPage = () => {
     const userMessage = { type: 'human', content: newMessage };
     setStreamRespondingMessage([userMessage]);
     setCurrentMessage('');
-    const chain = new RemoteRunnable({
-      url: `http://localhost:8000/chat/`,
-    });
+    const chain = new RemoteRunnable({url: `${base_url}/chat/`});
     let replyContent = { content: "" };
     try {
       const stream = await chain.stream(
