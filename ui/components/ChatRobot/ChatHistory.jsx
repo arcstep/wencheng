@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import ChatMessage from './ChatMessage';
 import styles from './ChatHistory.module.css'
 
-function ChatHistory({ messages, handleInsertText }) {
+function ChatHistory({ className, messages, handleInsertText }) {
   const messagesEndRef = useRef(null);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   
@@ -11,7 +11,7 @@ function ChatHistory({ messages, handleInsertText }) {
   }, [messages]);
 
   return (
-    <div className={styles.messagesHistory}>
+    <div className={className}>
       {messages.map(message => (
         <ChatMessage 
           key={message.id} 

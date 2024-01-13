@@ -5,14 +5,18 @@ import styles from './Layout.module.css'
 
 const Layout = ({ children, title }) => {
   return (
-    <div>
+    <div className={styles.layout}>
+      <div className={styles.header}>
         <Link href="/">
           <h1>{title}</h1>
         </Link>
-      <nav>
-        {/* Your toolbar here */}
-      </nav>
-      <main className={styles.container}>{children}</main>
+        <nav>
+          {/* Your toolbar here */}
+        </nav>
+      </div>
+      <div className={styles.body}>
+        {children}
+      </div>
     </div>
   );
 };

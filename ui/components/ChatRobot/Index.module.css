@@ -1,0 +1,14 @@
+/* Layout.css */
+.layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+}
+
+.header {
+  margin: 3px 5px;
+}
+
+.history {
+  overflow-y: auto;
+}

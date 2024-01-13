@@ -3,9 +3,9 @@
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100vh;
+  padding: 5px;
 }
 
-main.container {
-  /* 内容层样式 */
-  overflow: auto; /* 如果内容超出可视区域，显示滚动条 */
+.body {
+  overflow: auto; 
 }
