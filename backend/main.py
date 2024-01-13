@@ -37,7 +37,7 @@ app.add_middleware(
 # Declare a chain
 prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", "You're an assistant by the name of Bob."),
+        ("system", "You're an assistant by the name of 文成公主."),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{human_input}"),
     ]
