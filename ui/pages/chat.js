@@ -6,6 +6,7 @@ import {RemoteRunnable} from "langchain/runnables/remote";
 const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState([]);  
   const [currentMessage, setCurrentMessage] = useState('');
+  const [streamRespondingMessage, setStreamRespondingMessage] = useState([]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -27,22 +28,31 @@ const ChatPage = () => {
     const newMessage = currentMessage;
     console.log(newMessage);
     // 将新的消息添加到聊天记录中
-    setChatHistory([...chatHistory, currentMessage]);
+    const userMessage = { type: 'human', content: newMessage };
+    setStreamRespondingMessage([userMessage]);
     setCurrentMessage('');
     const chain = new RemoteRunnable({
       url: `http://localhost:8000/chat/`,
     });
+    let replyContent = { content: "" };
     try {
-      const reply = await chain.invoke(
+      const stream = await chain.stream(
         { 'human_input': newMessage },
-        { 'configurable': { 'session_id': "1" } }
+        { 'configurable': { 'session_id': "4" } }
       );
-      console.log(reply);
-      const msg = {
-        'type': reply.type,
-        'content': reply.content    
-      };
-      setChatHistory(chatHistory => [...chatHistory, msg]);
+      console.log("stream:", stream);
+
+      for await (const reply of stream) {
+        console.log(reply);
+        let replyContentToAdd = reply.content || '';
+        replyContent = {
+          'type': reply.type,
+          'content': replyContent.content + replyContentToAdd,
+        };
+        setStreamRespondingMessage([userMessage, replyContent])
+      }
+      setChatHistory(chatHistory => [...chatHistory, userMessage, replyContent]);
+      setStreamRespondingMessage([])
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log('Request was aborted');
@@ -55,7 +65,7 @@ const ChatPage = () => {
   return (
     <Layout title="我们随便聊聊">
       <ul>
-        {chatHistory.map(({ type, content }, index) => (
+        {[...chatHistory, ...streamRespondingMessage].map(({ type, content }, index) => (
           <li key = {index}>{ type }: {content}</li>
         ))}
       </ul>
