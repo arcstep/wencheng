@@ -29,8 +29,6 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
 
   const getSenderIcon = (type) => {
     switch (type) {
-      case 'ai':
-        return '/images/wencheng.png';
       case 'human':
         return '/images/you.jpeg';
       default:

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { chat_history, chat_reply } from '../api/chat_api';
+import { chat_history } from '../api/chat_history';
+import { replyFromBot } from '../api/robot';
 
 const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState([]);  
@@ -34,40 +35,40 @@ const ChatPage = () => {
     // const chain = new RemoteRunnable({ url: `${base_url}/chat/` });
     let replyContent = { content: "" };
     try {
-      const reader = await chat_reply(newMessage);
+      const reader = await replyFromBot(newMessage);
 
-      while (true) {
-        const result = await reader.read();
-        if (result.done) {
-          break;
-        }
+      // while (true) {
+      //   const result = await reader.read();
+      //   if (result.done) {
+      //     break;
+      //   }
 
-        const parse = (message) => {
-          const lines = message.split('\n');
-          const event = lines.find(line => line.startsWith('event:')).split(': ')[1];
-          const data = JSON.parse(lines.find(line => line.startsWith('data:')).split(': ')[1]);
-          return { event, data };
-        }
+      //   const parse = (message) => {
+      //     const lines = message.split('\n');
+      //     const event = lines.find(line => line.startsWith('event:')).split(': ')[1];
+      //     const data = JSON.parse(lines.find(line => line.startsWith('data:')).split(': ')[1]);
+      //     return { event, data };
+      //   }
 
-        console.log("result", result)
-        const replyString = new TextDecoder("utf-8").decode(result.value);
-        console.log("replyString", replyString);
-        const reply = parse(replyString.toString());
-        console.log("reply", reply);
-        console.log("content", reply.content);
-        console.log("type", reply.type);
-        console.log("reply event", reply.event);
-        console.log("reply data", reply.data);
+      //   console.log("result", result)
+      //   const replyString = new TextDecoder("utf-8").decode(result.value);
+      //   console.log("replyString", replyString);
+      //   const reply = parse(replyString.toString());
+      //   console.log("reply", reply);
+      //   console.log("content", reply.content);
+      //   console.log("type", reply.type);
+      //   console.log("reply event", reply.event);
+      //   console.log("reply data", reply.data);
 
-        let replyContentToAdd = reply.content || '';
-        replyContent = {
-          'type': reply.type,
-          'content': replyContent.content + replyContentToAdd,
-        };
-        setStreamRespondingMessage([userMessage, replyContent])
-      }
-      setChatHistory(chatHistory => [...chatHistory, userMessage, replyContent]);
-      setStreamRespondingMessage([])
+      //   let replyContentToAdd = reply.content || '';
+      //   replyContent = {
+      //     'type': reply.type,
+      //     'content': replyContent.content + replyContentToAdd,
+      //   };
+      //   setStreamRespondingMessage([userMessage, replyContent])
+      // }
+      // setChatHistory(chatHistory => [...chatHistory, userMessage, replyContent]);
+      // setStreamRespondingMessage([])
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log('Request was aborted');

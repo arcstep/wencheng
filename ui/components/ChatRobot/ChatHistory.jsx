@@ -12,9 +12,9 @@ function ChatHistory({ className, messages, handleInsertText }) {
 
   return (
     <div className={className}>
-      {messages.map(message => (
+      {messages.map((message, index) => (
         <ChatMessage 
-          key={message.id} 
+          key={index} 
           handleInsertText={handleInsertText} 
           message={message} 
           onClick={() => setSelectedMessageId(message.id)}

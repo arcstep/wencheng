@@ -7,6 +7,7 @@ import styles from './Index.module.css';
 export default function ChatRobot({ handleInsertText }) {
   const [messages, setMessages] = useState([]);
   const [messageSentHistory, setMessageSentHistory] = useState(["hi", "你是文成公主吗？"]);
+  const [streamRespondingMessage, setStreamRespondingMessage] = useState([]);
   const addMessageSentToHistory = (message) => {
     setMessageSentHistory(prevHistory => [message, ...prevHistory]);
   };
@@ -20,10 +21,12 @@ export default function ChatRobot({ handleInsertText }) {
   return (
     <div className={ styles.layout }>
       <div className={styles.header}>@文成公主 openai, gpt4.0</div>
-      <ChatHistory className={styles.history} messages={messages} handleInsertText={handleInsertText} />
+      <ChatHistory className={styles.history} messages={[...messages, ...streamRespondingMessage]} handleInsertText={handleInsertText} />
       <ChatMessageSender
         className={styles.sender}
+        messages={messages}
         setMessages={setMessages}
+        setStreamRespondingMessage={setStreamRespondingMessage}
         messageSentHistory={messageSentHistory}
         addMessageSentToHistory={addMessageSentToHistory}
       />

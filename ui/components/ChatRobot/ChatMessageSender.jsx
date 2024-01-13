@@ -3,7 +3,7 @@ import AutosizeTextarea from 'react-autosize-textarea';
 import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
 
-function ChatMessageSender({ className, setMessages, messageSentHistory, addMessageSentToHistory }) {
+function ChatMessageSender({ className, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
   const [robotIsRequesting, setRobotIsRequesting] = useState(false);
   const [controller, setController] = useState(null);
@@ -58,82 +58,46 @@ function ChatMessageSender({ className, setMessages, messageSentHistory, addMess
 
   const handleSendClick = async () => {
     if (message.trim() === '') return;
-    
-    // 创建一个新的消息对象
-    const newMessage = {
-      id: Date.now(),
-      timestamp: Date.now(),
-      senderName: '你',
-      senderIcon: "/images/you.jpeg",
-      text: message,
-      quotes: []
-    };
+ 
+    // 构造用户发出的消息
+    const userMessage = { type: 'human', content: message };
+    setStreamRespondingMessage([userMessage]);
 
-    // 使用setMessages函数来更新消息
-    setMessages(prevMessages => [...prevMessages, newMessage]);
-
+    // 添加到历史消息列表，以便在按上方向键时显示
+    addMessageSentToHistory(userMessage.content)
     // 清空输入框
     setMessage('');
 
-    // 机器人回复
-    let replyMessage = {
-      id: Date.now() + 1,
-      timestamp: Date.now(),
-      senderName: '文成公主',
-      senderIcon: "/images/wencheng.png",
-      text: "",
-      quotes: []
-    };
-
-    // 使用setMessages函数来更新消息
-    // console.log("replyMessage.text", replyMessage.text)
-    setMessages(prevMessages => [...prevMessages, replyMessage]);
-    // 每次请求发生时，都记录一下当前的请求状态
+    // 设置机器人正在请求
     setRobotIsRequesting(true);
-
+    // 构造机器人发出的消息
+    let replyMessage = { type: 'ai', content: "" };
+    let streamChunk = {};
+    // 创建一个新的 AbortController
+    const newController = new AbortController();
+    setController(newController);
     try {
-      const newController = new AbortController();
-      setController(newController);
       // 发送请求
-      const { reader, contentType } = await replyFromBot(newMessage.text, newController.signal);
-      addMessageSentToHistory(newMessage.text)
-      // 创建一个解码器
-      const decoder = new TextDecoder('utf-8');
-      // 读取并处理数据块
-      reader.read().then(function processText({ done, value }) {
-        if (newController.signal.aborted || done) {
-          console.log("Fetch request has been aborted")
-          return;
-        }
-        // 解码数据块
-        const chunk = decoder.decode(value);
-        // 根据 Content-Type 处理数据块
-        if (contentType.includes("application/json")) {
-          // 如果数据块是 JSON，解析它并添加到消息的文本中
-          replyMessage.text += JSON.parse(chunk);
-        } else if (contentType.includes("text/plain") || contentType.includes("text/markdown")) {
-          // 如果数据块是纯文本或 Markdown，直接添加到消息的文本中
-          replyMessage.text += chunk;
-        }
-        // 更新消息列表
-        setMessages(prevMessages => prevMessages.map(message => message.id === replyMessage.id ? { ...message, text: replyMessage.text } : message));
-        // 继续读取下一个数据块
-        return reader.read().then(processText);
-      }).catch(error => {
-        if (error.name === "AbortError") {
-          console.log("Fetch request has been aborted");
-        } else {
-          console.error(error);
-        }
-      }).finally(() => {
-        setRobotIsRequesting(false);
-      });
+      await replyFromBot(
+        userMessage.content,
+        (finalContent) => {
+          setStreamRespondingMessage([]);
+          replyMessage.content = finalContent;
+          setMessages([...messages, userMessage, replyMessage]);
+        },
+        (content) => {
+          replyMessage.content = content;
+          setStreamRespondingMessage([userMessage, replyMessage]);
+        },
+      )
     } catch (error) {
       if (error.name === "AbortError") {
         console.log("Fetch request has been aborted");
       } else {
         console.error(error);
       }
+      throw(error)
+    } finally {
       setRobotIsRequesting(false);
       setController(null);
     }

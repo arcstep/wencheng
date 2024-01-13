@@ -22,7 +22,9 @@ async function chat_reply(question) {
       'input': { 'human_input': question },
       'config': {'configurable': { 'session_id': "4" }}
     }),
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': "plain/text",  }
   });
 
   return response.body.getReader();
