@@ -5,12 +5,13 @@ from langchain_core.globals import set_debug
 from langserve import add_routes
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.chat_history import with_chat_history, get_chat_history
+from backend.chat_history import with_chat_history, get_chat_history_by_session_id
 
 # 设置调试模式
 set_debug(True)
 
 # 加载 .env 到环境变量
+import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv(), override=True)
 
@@ -20,9 +21,8 @@ app = FastAPI(
     description="Wencheng Agent API server",
 )
 
-origins = [
-    "http://localhost:3000",
-]
+origins = os.getenv("WENCHENG_CORS_ORIGINS", "http://localhost:3000").split(",")
+print("CORS origins:", origins)
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,8 +47,7 @@ add_routes(app, with_chat_history(chain), path="/chat")
 
 # 查询聊天历史记录的接口
 @app.get("/chat_history/{session_id}")
-async def get_chat_history_by_session_id(session_id: str):
-    hist = get_chat_history("data/chat_histories", session_id)
-    return hist.messages
+async def chat_history(session_id: str):
+    return get_chat_history_by_session_id(session_id)
 
 
