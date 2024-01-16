@@ -47,7 +47,7 @@ prompt_auto = ChatPromptTemplate.from_messages(
     [
         ("system", "You're an expert for building prompt TEMPLATE Enginer."),
         ("human", """
-            Based on the following instrutions, help me write a good prompt TEMPLATE for the following task:
+            Based on the following instrutions, help me write a good prompt TEMPLATE for the following task in chinese:
 
             {human_input}
 
@@ -55,7 +55,6 @@ prompt_auto = ChatPromptTemplate.from_messages(
 
             When you have enough information to create a good prompt, return the prompt in the following format:\n\n```prompt\n\n...\n\n```
 
-            请用中文回答。
         """),
     ]
 )
@@ -63,7 +62,7 @@ prompt_auto = ChatPromptTemplate.from_messages(
 prompt_once = ChatPromptTemplate.from_messages(
     [
         ("system", "You're an assistant by the name of 文成公主."),
-        ("human", "{human_input}"),
+        ("human", "{human_input}; 按markdown格式返回。"),
     ]
 )
 
@@ -90,7 +89,7 @@ add_routes(
 add_routes(
     app,
     prompt_auto | llm,
-    path="/chat-auto",
+    path="/auto-prompt",
     config_keys=["metadata", "configurable"]
 )
 

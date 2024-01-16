@@ -10,6 +10,11 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [thinking, setThinking] = useState('');
   const [dots, setDots] = useState(0);
+  const [robot_action, setRobotAction] = useState("chat");
+
+  const handleSelectChange = (event) => {
+    setRobotAction(event.target.value);
+  };
 
   useEffect(() => {
     if (robotIsRequesting) {
@@ -89,7 +94,7 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
           replyMessage.content = content;
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
-        "chat-auto",
+        robot_action,
       )
     } catch (error) {
       if (error.name === "AbortError") {
@@ -137,6 +142,14 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
       </style>
 
       <div className='message-sender'>
+        <div>
+          <select value={robot_action} onChange={handleSelectChange}>
+            <option value="chat">多轮聊天</option>
+            <option value="chat-once">单轮聊天</option>
+            <option value="auto-prompt">生成提示语模板</option>
+          </select>
+          {/* 其他组件 */}
+        </div>        
         <div className='robot-thinking'>{thinking + '.'.repeat(dots)}</div>
         <AutosizeTextarea
           value={message}
