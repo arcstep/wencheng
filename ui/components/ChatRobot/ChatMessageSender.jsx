@@ -89,6 +89,7 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
           replyMessage.content = content;
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
+        "chat-auto",
       )
     } catch (error) {
       if (error.name === "AbortError") {

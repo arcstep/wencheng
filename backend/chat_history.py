@@ -7,6 +7,8 @@ from typing import Callable, Union
 from typing_extensions import TypedDict
 import re
 import os
+import datetime
+import random
 
 # 从环境变量中读取聊天历史记录的存储路径
 wenchdeng_chat_histories_folder = os.getenv("WENCHENG_CHAT_HISTORIES_FOLDER", "data/chat_histories")
@@ -30,14 +32,6 @@ def get_chat_history(session_id: str) -> FileChatMessageHistory:
     return FileChatMessageHistory(str(file_path))
 
 def create_session_factory() -> Callable[[str], BaseChatMessageHistory]:
-    """Create a session ID factory that creates session IDs from a base dir.
-
-    Args:
-        base_dir: Base directory to use for storing the chat histories.
-
-    Returns:
-        A session ID factory that creates session IDs from a base path.
-    """
     base_dir_ = wenchdeng_chat_histories_folder
     if not Path(base_dir_).exists():
         base_dir_.mkdir(parents=True)
@@ -69,5 +63,24 @@ def get_chat_history_by_session_id(session_id: str):
         hist = get_chat_history(session_id)
         return hist.messages
 
-def fetch_new_chat_session():
-    []
+# 检查对话历史是否存在
+def is_chat_session_exist(session_id):
+    file_path = f"{wenchdeng_chat_histories_folder}/{session_id}.json"
+    return os.path.exists(file_path)
+
+# 创建新的对话轮次ID
+def create_new_chat():
+    while True:
+        session_id = __create_session_id()
+        # 如果找到不存在的对话历史文件，就跳出循环并返回结果
+        if not is_chat_session_exist(session_id):
+            break
+    return session_id
+
+def __create_session_id():
+    now = datetime.datetime.now()
+    date_time = now.strftime("%Y%m%d-%H%M%S")
+    random_number = random.randint(1000, 9999)
+    # 组合成 session id
+    session_id = f"{date_time}-{random_number}"
+    return session_id

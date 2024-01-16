@@ -5,7 +5,7 @@ from langchain_core.globals import set_debug
 from langserve import add_routes
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.chat_history import with_chat_history, get_chat_history_by_session_id
+from backend.chat_history import with_chat_history, get_chat_history_by_session_id, create_new_chat, is_chat_session_exist
 
 # 设置调试模式
 set_debug(True)
@@ -42,6 +42,31 @@ prompt = ChatPromptTemplate.from_messages(
         ("human", "{human_input}"),
     ]
 )
+
+prompt_auto = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You're an expert for building prompt TEMPLATE Enginer."),
+        ("human", """
+            Based on the following instrutions, help me write a good prompt TEMPLATE for the following task:
+
+            {human_input}
+
+            Notably, this prompt TEMPLATE expects that additional information will be provided by the end user of the prompt you are writing. For the piece(s) of information that they are expected to provide, please write the prompt in a format where they can be formatted into as if a Python f-string.
+
+            When you have enough information to create a good prompt, return the prompt in the following format:\n\n```prompt\n\n...\n\n```
+
+            请用中文回答。
+        """),
+    ]
+)
+
+prompt_once = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You're an assistant by the name of 文成公主."),
+        ("human", "{human_input}"),
+    ]
+)
+
 llm = ChatOpenAI(
     model="gpt-3.5-turbo-16k",
     streaming=True,
@@ -55,7 +80,26 @@ add_routes(
     config_keys=["metadata", "configurable"]
 )
 
+add_routes(
+    app,
+    prompt_once | llm,
+    path="/chat-once",
+    config_keys=["metadata", "configurable"]
+)
+
+add_routes(
+    app,
+    prompt_auto | llm,
+    path="/chat-auto",
+    config_keys=["metadata", "configurable"]
+)
+
 # 查询聊天历史记录的接口
 @app.get("/chat_history/{session_id}")
 async def chat_history(session_id: str):
     return get_chat_history_by_session_id(session_id)
+
+# 创建新的对话轮次
+@app.post("/chat_history")
+async def chat_create():
+    return create_new_chat()
