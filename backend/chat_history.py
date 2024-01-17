@@ -5,6 +5,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from pathlib import Path
 from typing import Callable, Union
 from typing_extensions import TypedDict
+from pydantic import BaseModel
 import re
 import os
 import datetime
@@ -37,17 +38,14 @@ def create_session_factory() -> Callable[[str], BaseChatMessageHistory]:
         base_dir_.mkdir(parents=True)
     return get_chat_history
 
-class InputChat(TypedDict):
-    """Input for the chat endpoint."""
-
-    human_input: str
-    """Human input"""
+class InputChat(BaseModel):
+    input: str
 
 def with_chat_history(chain):
     r = RunnableWithMessageHistory(
         chain,
         create_session_factory(),
-        input_messages_key="human_input",
+        input_messages_key="humen_input",
         history_messages_key="history",
     ).with_types(input_type=InputChat)
     return r
