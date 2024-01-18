@@ -10,7 +10,7 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [thinking, setThinking] = useState('');
   const [dots, setDots] = useState(0);
-  const [robot_action, setRobotAction] = useState("chat");
+  const [robot_action, setRobotAction] = useState("chat_stream");
 
   const handleSelectChange = (event) => {
     setRobotAction(event.target.value);
@@ -61,6 +61,9 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
     setRobotIsRequesting(false);
   };
 
+  const handleNewSession = () => {
+  }
+
   const handleSendClick = async () => {
     if (message.trim() === '') return;
  
@@ -77,7 +80,6 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
     setRobotIsRequesting(true);
     // 构造机器人发出的消息
     let replyMessage = { type: 'ai', content: "" };
-    let streamChunk = {};
     // 创建一个新的 AbortController
     const newController = new AbortController();
     setController(newController);
@@ -85,16 +87,20 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
       // 发送请求
       await replyFromBot(
         userMessage.content,
-        (finalContent) => {
+        // 流文本结束后
+        () => {
           setStreamRespondingMessage([]);
-          replyMessage.content = finalContent;
+          console.log("reply from robot(final): ", replyMessage)
           setMessages([...messages, userMessage, replyMessage]);
         },
+        // 流文本增量处理
         (content) => {
           replyMessage.content = content;
+          console.log("reply from robot: ", replyMessage.content)
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
         robot_action,
+        controller
       )
     } catch (error) {
       if (error.name === "AbortError") {
@@ -143,10 +149,32 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
 
       <div className='message-sender'>
         <div>
-          <select value={robot_action} onChange={handleSelectChange}>
-            <option value="chat">多轮聊天</option>
-            <option value="chat-once">单轮聊天</option>
-            <option value="auto-prompt">生成提示语模板</option>
+          <button style={{
+            backgroundColor: "#4CAF50", /* Green */
+            border: "none",
+            color: "white",
+            padding: "10px 20px",
+            textAlign: "center",
+            textDecoration: "none",
+            display: "inline-block",
+            fontSize: "14px",
+            margin: "2px 1px",
+            cursor: "pointer"
+          }} onClick={handleNewSession}>新会话</button>
+
+          <select style={{
+            width: "200px",
+            height: "30px",
+            padding: "3px",
+            fontSize: "14px",
+            border: "none",
+            borderRadius: "5px",
+            backgroundColor: "#f8f8f8",
+            color: "#444"
+          }} value={robot_action} onChange={handleSelectChange}>
+            <option value="chat_stream">多轮聊天</option>
+            <option value="chat_once">单轮聊天</option>
+            <option value="auto_prompt">生成提示语模板</option>
           </select>
           {/* 其他组件 */}
         </div>        
