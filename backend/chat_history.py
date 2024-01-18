@@ -45,7 +45,7 @@ def with_chat_history(chain):
     r = RunnableWithMessageHistory(
         chain,
         create_session_factory(),
-        input_messages_key="humen_input",
+        input_messages_key="question",
         history_messages_key="history",
     ).with_types(input_type=InputChat)
     return r

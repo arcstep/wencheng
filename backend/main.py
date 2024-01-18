@@ -19,9 +19,9 @@ load_dotenv(find_dotenv(), override=True)
 print("LANGFUSE_PUBLIC_KEY: ", os.getenv("LANGFUSE_PUBLIC_KEY"))
 
 app = FastAPI(
-    title="LangServe Server",
+    title="Wencheng LLM Server",
     version="1.0",
-    description="Wencheng Agent API server",
+    description="Wencheng Agent server based on LLM",
 )
 
 origins = os.getenv("WENCHENG_CORS_ORIGINS").split(",")
