@@ -13,12 +13,17 @@ export default function ChatRobot({ handleInsertText }) {
     setMessageSentHistory(prevHistory => [message, ...prevHistory]);
   };
 
+  const newChatSession = async () => {
+    const id = await chat_new()
+    console.log("chatSessionId", id);
+    setChatSessionId(id);
+    setMessages([]);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchHistoryData = async () => {
       if (chatSessionId === null) {
-        const id = await chat_new();
-        console.log("chatSessionId", id);
-        setChatSessionId(id);
+        newChatSession();
       } else {
         try {
           const data = await chat_history(chatSessionId);
@@ -28,8 +33,7 @@ export default function ChatRobot({ handleInsertText }) {
         }
       }
     };
-
-    fetchData();
+    fetchHistoryData();
   }, []); // 组件挂载后仅从服务端拉取执行一次，除非手动更新
 
   return (
@@ -39,6 +43,7 @@ export default function ChatRobot({ handleInsertText }) {
       <ChatMessageSender
         className={styles.sender}
         chatSessionId={chatSessionId}
+        newChatSession={newChatSession}
         messages={messages}
         setMessages={setMessages}
         setStreamRespondingMessage={setStreamRespondingMessage}

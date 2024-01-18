@@ -3,7 +3,7 @@ import AutosizeTextarea from 'react-autosize-textarea';
 import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
 
-function ChatMessageSender({ className, chatSessionId, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
+function ChatMessageSender({ className, chatSessionId, newChatSession, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
   const [robotIsRequesting, setRobotIsRequesting] = useState(false);
   const [controller, setController] = useState(null);
@@ -62,6 +62,8 @@ function ChatMessageSender({ className, chatSessionId, messages, setMessages, se
   };
 
   const handleNewSession = () => {
+    if(newChatSession)
+        newChatSession()
   }
 
   const handleSendClick = async () => {
@@ -150,19 +152,20 @@ function ChatMessageSender({ className, chatSessionId, messages, setMessages, se
 
       <div className='message-sender'>
         <div>
-          <button style={{
-            backgroundColor: "#4CAF50", /* Green */
-            border: "none",
-            color: "white",
-            padding: "10px 20px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "14px",
-            margin: "2px 1px",
-            cursor: "pointer"
-          }} onClick={handleNewSession}>新会话</button>
-
+          {
+            newChatSession && <button style={{
+              backgroundColor: "#af4c63",
+              border: "none",
+              color: "white",
+              padding: "10px 20px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "14px",
+              margin: "2px 1px",
+              cursor: "pointer"
+            }} onClick={handleNewSession}>+</button>
+          }
           <select style={{
             width: "200px",
             height: "30px",
