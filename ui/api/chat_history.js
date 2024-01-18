@@ -1,11 +1,11 @@
 // pages/api/chat.js
 import axios from 'axios';
+const base_url = process.env.NEXT_PUBLIC_BASE_URL;
 
-async function chat_history() {
+async function chat_history(chatSessionId) {
   try {
-    const base_url = process.env.NEXT_PUBLIC_BASE_URL;
     // console.log("env:", base_url)
-    const response = await axios.get(`${base_url}/chat_history/10`);
+    const response = await axios.get(`${base_url}/chat_history/${chatSessionId}`);
     // console.log("RESPONSE:", response.data)
     return response.data;
   } catch (error) {
@@ -13,21 +13,15 @@ async function chat_history() {
   }
 }
 
-async function chat_reply(question) {
-  const base_url = process.env.NEXT_PUBLIC_BASE_URL;
-
-  const response = await fetch(`${base_url}/chat/stream`, {
-    method: 'POST',
-    body: JSON.stringify({
-      'input': { 'human_input': question },
-      'config': {'configurable': { 'session_id': "4" }}
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': "plain/text",  }
-  });
-
-  return response.body.getReader();
+async function chat_new() {
+  try {
+    // console.log("env:", base_url)
+    const response = await axios.post(`${base_url}/chat_history`);
+    // console.log("RESPONSE:", response.data)
+    return response.data;
+  } catch (error) {
+    console.error("ERROR:", error);
+  }
 }
 
-export { chat_history, chat_reply };
+export { chat_history, chat_new };

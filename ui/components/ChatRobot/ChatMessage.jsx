@@ -42,12 +42,12 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
         <button className={styles.copyButton} onClick={handleCopyClick}>
           <FaCopy />
         </button>
-        <button className={styles.sendButton} onClick={handleSendClick}>
+        {/* <button className={styles.sendButton} onClick={handleSendClick}>
           <FaPaperPlane />
         </button>
         <button className={styles.infoButton} onClick={handleInfoClick}>
           <FaInfo />
-        </button>
+        </button> */}
       </div>
       <img className={styles.avatar} src={getSenderIcon(message.type)} alt={message.type} />
       <div className={styles.messageContent}>

@@ -25,7 +25,7 @@
   width: 80px;
   padding: 2px;
   border-radius: 2px;
-  background-color: #d3d3d3;
+  background-color: transparent;
   transition: background-color 0.3s ease, visibility 0.3s ease;
   visibility: hidden;
   /* 默认不可见 */
@@ -40,7 +40,7 @@
 .sendButton,
 .infoButton {
   color: white;
-  background-color: transparent;
+  background-color: #999;
   transition: background-color 0.3s ease;
   flex-shrink: 0;
   /* 防止按钮在 flex 容器中缩小 */

@@ -3,7 +3,7 @@ import AutosizeTextarea from 'react-autosize-textarea';
 import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
 
-function ChatMessageSender({ className, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
+function ChatMessageSender({ className, chatSessionId, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
   const [robotIsRequesting, setRobotIsRequesting] = useState(false);
   const [controller, setController] = useState(null);
@@ -100,7 +100,8 @@ function ChatMessageSender({ className, messages, setMessages, setStreamRespondi
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
         robot_action,
-        controller
+        controller,
+        chatSessionId
       )
     } catch (error) {
       if (error.name === "AbortError") {
