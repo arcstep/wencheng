@@ -1,0 +1,23 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 50px auto;
+  height: 100vh;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.toolbar button {
+  width: 50px;
+  height: 50px;
+  margin: 5px -5px 0 5px;
+}
+
+.view {
+  overflow: auto;
+  margin-left: 20px;
+}

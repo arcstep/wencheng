@@ -1,0 +1,58 @@
+.container {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f8f8f8;
+}
+
+.container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.container button:hover {
+  background-color: #45a049;
+}
+
+.robot-thinking {
+  grid-column: span 2;
+}
+
+.container .new-chat-session {
+  background-color: #af4c63;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 2px 1px;
+  cursor: pointer;
+}
+
+.container .select-action {
+  width: 200px;
+  height: 30px;
+  padding: 3px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  color: #444;
+}
+
+.container .message-input {
+  margin: 0px 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+  max-height: 400px;
+}

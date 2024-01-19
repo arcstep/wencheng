@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AutosizeTextarea from 'react-autosize-textarea';
 import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
+import styles from './ChatMessageSender.module.css';
 
 function ChatMessageSender({ className, chatSessionId, newChatSession, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
@@ -120,82 +121,25 @@ function ChatMessageSender({ className, chatSessionId, newChatSession, messages,
 
   return (
     <div className={className}>
-      <style>
-        {`
-        .message-sender {
-          display: grid;
-          grid-template-rows: auto auto;
-          grid-template-columns: 1fr auto;
-          gap: 10px;
-          padding: 10px;
-          background-color: #f8f8f8;
-        }
-
-        .message-sender button {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 4px;
-          background-color: #4CAF50;
-          color: white;
-          cursor: pointer;
-        }
-
-        .message-sender button:hover {
-          background-color: #45a049;
-        }
-
-        .robot-thinking {
-          grid-column: span 2;
-        }
-      `}
-      </style>
-
-      <div className='message-sender'>
+      <div className={styles.container}>
         <div>
           {
-            newChatSession && <button style={{
-              backgroundColor: "#af4c63",
-              border: "none",
-              color: "white",
-              padding: "10px 20px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "14px",
-              margin: "2px 1px",
-              cursor: "pointer"
-            }} onClick={handleNewSession}>+</button>
+            newChatSession && <button className={styles['new-chat-session']} onClick={handleNewSession}>+</button>
           }
-          <select style={{
-            width: "200px",
-            height: "30px",
-            padding: "3px",
-            fontSize: "14px",
-            border: "none",
-            borderRadius: "5px",
-            backgroundColor: "#f8f8f8",
-            color: "#444"
-          }} value={robot_action} onChange={handleSelectChange}>
+          <select className={styles['select-action']} value={robot_action} onChange={handleSelectChange}>
             <option value="chat_stream">多轮聊天</option>
             <option value="chat_once">单轮聊天</option>
             <option value="auto_prompt">生成提示语模板</option>
           </select>
           {/* 其他组件 */}
         </div>        
-        <div className='robot-thinking'>{thinking + '.'.repeat(dots)}</div>
+        <div className={styles['robot-thinking']}>{thinking + '.'.repeat(dots)}</div>
         <AutosizeTextarea
+          className={styles['message-input']}
           value={message}
           placeholder='询问 文成公主 - GPT4'
           onChange={e => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          style={{
-            margin: '0px 15px',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            resize: 'none',
-            maxHeight: '400px'
-          }}
         />
         {
           robotIsRequesting ? (
