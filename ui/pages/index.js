@@ -36,7 +36,7 @@ export default function Home() {
           </Link>
 
           <Link href="/train" className={styles.card}>
-            <h3>训练 &rarr;</h3>
+            <h3>教学 &rarr;</h3>
             <p>
               帮你理解和掌握
             </p>
