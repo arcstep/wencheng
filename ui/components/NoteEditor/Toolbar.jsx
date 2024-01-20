@@ -2,6 +2,7 @@
 import React from 'react';
 import { FaListUl, FaListOl, FaCode } from 'react-icons/fa';
 import { EditorState, RichUtils } from 'draft-js';
+import './Toolbar.module.css';
 
 export default function Toolbar({ className, editor, editorState, setEditorState }) {
   const blockTypes = [

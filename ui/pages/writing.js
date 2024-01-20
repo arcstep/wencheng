@@ -15,6 +15,22 @@ const WritingPage = () => {
 
   return (
     <Layout title="写作">
+      <style>
+        {`
+          button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+          }
+          button:hover {
+            background: #eee;
+          }
+          button.active {
+            background: #ddd;
+            color: #333;
+          }
+        `}
+      </style>
       <div className={styles['grid-container']}>
         <div className={styles.toolbar}>
           <button className={selectedButton === 1 ? styles.selected : ''} onClick={() => handleChangeView(1)}>

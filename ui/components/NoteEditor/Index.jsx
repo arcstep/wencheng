@@ -5,6 +5,7 @@ import Toolbar from './Toolbar';
 import "draft-js/dist/Draft.css";
 import { stateFromHTML } from 'draft-js-import-html'; // 用于将 HTML 文本转换为 Draft.js 的 ContentState 对象
 import { marked } from 'marked';
+import styles from './Index.module.css';
 
 export default function TextEditor({className, style, editorState, setEditorState}) {
   const editor = React.useRef(null);
@@ -86,67 +87,14 @@ export default function TextEditor({className, style, editorState, setEditorStat
   }
 
   return (
-    <div className={`${className} editor-container`}>
-      <style>
-        {`
-        .editor-container {
-          display: grid;
-          grid-template-rows: 3em auto;
-          grid-template-columns: 1fr;
-          margin-left: 5px;
-          height: 100%;
-          background-color: #f5f5f5;
-        }
-
-        .editor-toolbar {
-          grid-row: 1;
-          grid-column: 1 / span 2;
-          align-self: start;
-
-          margin: 5px;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          background-color: #fff;
-        }
-
-        .editor {
-          grid-row: 2;
-          grid-column: 1;
-
-          margin: 5px;
-          padding: 0px 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          cursor: text;
-          height: calc(100% - 30px);
-          overflow: auto;
-          background-color: #fff;
-        }
-
-        .table-of-contents {
-          grid-row: 2;
-          grid-column: 2;
-          margin: 5px;
-          height: calc(100% - 30px);
-          overflow: auto;
-          padding: 0px 5px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          background-color: #fff;
-        }
-      `}
-      </style>
+    <div className={`${className} ${styles["editor-container"]}`}>
       <Toolbar
-        className={"editor-toolbar"}
+        className={styles["editor-toolbar"]}
         editor={editor}
         editorState={editorState}
         setEditorState={setEditorState}
       />
-      <div className="editor" onClick={focusEditor}>
+      <div className={styles.editor} onClick={focusEditor}>
         <Editor
           blockRendererFn={blockRendererFn}
           ref={editor}
@@ -158,7 +106,7 @@ export default function TextEditor({className, style, editorState, setEditorStat
         />
       </div>
       {/* <TableOfContents
-        className="table-of-contents"
+        className={styles["table-of-contents"]}
         editor={editor}
         editorState={editorState}
         setEditorState={setEditorState}
