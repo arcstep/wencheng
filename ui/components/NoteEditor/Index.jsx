@@ -23,24 +23,22 @@ export default function TextEditor({className, editorState, setEditorState}) {
   }, []); // 当 editorState 更新时，执行 focus
 
   const blockRendererFn = (block) => {
-    if (/^@文本变量[ ]+/g.test(block.getText())) {
-      return {
-        component: BlockVarText,
-        props: {
-          className: 'var-text-block',
-        },
-      };
-    } else {
-      return {
-        component: (props) => {
-          return <div data-key={props.block.getKey()}><EditorBlock {...props} /></div>;
-        },
-        props: {
-          className: 'editor-block',
-        },
-        editable: true,
-      };
+    const type = block.getType();
+
+    let Component = EditorBlock;
+    if (type === 'var-text-block') {
+      Component = BlockVarText;
     }
+
+    return {
+      component: (props) => {
+        return <div data-key={props.block.getKey()}><Component {...props} /></div>;
+      },
+      props: {
+        className: 'editor-block',
+      },
+      editable: true,
+    };
   };
 
   function focusEditor() {

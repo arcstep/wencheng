@@ -1,18 +1,23 @@
 import { EditorBlock } from 'draft-js';
-import { useState, useEffect } from 'react';
+import { use } from 'marked';
+import { useState } from 'react';
 
 const BlockVarText = (props) => {
-  const [varName, setVarName] = useState("");
-
-  useEffect(() => {
-    const blockText = props.block.getText();
-    setVarName(blockText.replace(/^@文本变量[ ]+/g, ''));
-  }, [props.block]);
+  const [varText, setVarText] = useState('这是一个文本变量');
 
   return (
-    <div data-key={props.block.getKey()} style={{ border: '1px solid green' }}>
+    <div data-key={props.block.getKey()} style={{ margin: '10px', padding: '10px', border: '1px solid green' }}>
       <EditorBlock {...props} />
-      <div>{varName}</div>
+      <div style={{
+        border: '1px solid #ccc',
+        boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
+        borderRadius: '4px',
+        padding: '5px',
+        margin: '5px 5px',
+        backgroundColor: '#f9f9f9'
+      }}>
+        {varText}
+      </div>
   </div>
   );
 };

@@ -30,7 +30,6 @@ export default function Toolbar({ className, editor, editorState, setEditorState
   }
 
   function toggleBlockType(blockType) {
-    // 切换样式
     const currentBlockType = RichUtils.getCurrentBlockType(editorState);
     let newBlockType = blockType;
 
@@ -38,41 +37,12 @@ export default function Toolbar({ className, editor, editorState, setEditorState
       newBlockType = 'unstyled';
     }
 
-    //
     const contentState = editorState.getCurrentContent();
     const selectionState = editorState.getSelection();
     let newContentState = Modifier.setBlockType(
       contentState,
       selectionState,
       newBlockType
-    );
-
-    const blockKey = selectionState.getStartKey();
-    const block = newContentState.getBlockForKey(blockKey);
-    let text = block.getText();
-
-    // 之前是引用文本，现在点击任何按钮都删除开头的「@引用文本」这几个字符
-    if (currentBlockType === 'var-text-block') {
-      text = text.replace(/^@文本变量[ ]+/g, '');
-    }
-    
-    // 之前不是引用文本，现在点击“引用文本”添加
-    if (blockType === 'var-text-block' && currentBlockType !== 'var-text-block') {
-      text = '@文本变量 ' + text;
-    }
-
-    // 构造返回块
-    const blockSelection = new SelectionState({
-      anchorKey: blockKey,
-      anchorOffset: 0,
-      focusKey: blockKey,
-      focusOffset: block.getLength(),
-    });
-
-    newContentState = Modifier.replaceText(
-      newContentState,
-      blockSelection,
-      text
     );
 
     let newEditorState = EditorState.push(editorState, newContentState, 'change-block-type');
