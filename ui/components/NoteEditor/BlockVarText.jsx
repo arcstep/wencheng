@@ -1,9 +1,11 @@
-import { EditorBlock } from 'draft-js';
-import { use } from 'marked';
-import { useState } from 'react';
+import { EditorBlock, Modifier, EditorState } from 'draft-js';
 
 const BlockVarText = (props) => {
-  const [varText, setVarText] = useState('这是一个文本变量');
+  const handleClick = (event) => {
+    console.log('handleClick: ', props.block.getText())
+  };
+
+  const varText = props.block.getData().get('varText', '这是一个文本变量');
 
   return (
     <div data-key={props.block.getKey()} style={{ margin: '10px', padding: '10px', border: '1px solid green' }}>
@@ -17,8 +19,9 @@ const BlockVarText = (props) => {
         backgroundColor: '#f9f9f9'
       }}>
         {varText}
+        <button onMouseDown={handleClick}>修改文本变量</button>
       </div>
-  </div>
+    </div>
   );
 };
 

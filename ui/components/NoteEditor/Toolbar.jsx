@@ -61,8 +61,8 @@ export default function Toolbar({ className, editor, editorState, setEditorState
     const selection = editorState.getSelection();
     const newState = RichUtils.toggleInlineStyle(editorState, inlineStyle);
 
-    console.log('Selection start:', selection.getStartOffset());
-    console.log('Selection end:', selection.getEndOffset());
+    // console.log('Selection start:', selection.getStartOffset());
+    // console.log('Selection end:', selection.getEndOffset());
 
     setEditorState(EditorState.forceSelection(newState, selection));
     focusEditor();
@@ -98,8 +98,8 @@ export default function Toolbar({ className, editor, editorState, setEditorState
         `}
       </style>
       {blockTypes.map((type) => {
-          console.log("type: ", type)
-          console.log(RichUtils.getCurrentBlockType(editorState))
+          // console.log("type: ", type)
+          // console.log(RichUtils.getCurrentBlockType(editorState))
           return <button
             key={type.style}
             onMouseDown={(event) => {
