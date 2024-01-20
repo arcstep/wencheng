@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import NoteEditor from '../NoteEditor/Index';
+import DraftEditor from './DraftEditor';
 import styles from './Index.module.css';
-import { ContentState, ContentBlock, genKey, EditorState, Modifier } from 'draft-js';
+import { ContentState, ContentBlock, genKey, EditorState } from 'draft-js';
+import TableOfContents from './TableOfContents';
+import Toolbar from './Toolbar';
 
-const GridComponent = () => {
-  const handleSelectFile = (path) => {
-    setCurrentPath(path);
-  };
+const Editor = () => {
+  const editor = React.useRef(null);
 
   // 默认的笔记内容块
   const blocks = [
@@ -30,39 +30,30 @@ const GridComponent = () => {
   // const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState));
 
-  const handleInsertText = (text) => {
-    let htmlText = marked(text);
-    let contentState = stateFromHTML(htmlText);
-
-    // 如果当前的 EditorState 对象中没有内容块，则使用 ContentState.createFromText 方法创建一个新的 ContentState 对象
-    if (typeof contentState.getBlockMap !== 'function') {
-      contentState = ContentState.createFromText(text);
-    }
-
-    // 使用 Modifier.replaceWithFragment 方法将新的 ContentState 对象合并到当前的 EditorState 中
-    const selectionState = editorState.getSelection();
-    const newContentState = Modifier.replaceWithFragment(
-      editorState.getCurrentContent(),
-      selectionState,
-      contentState.getBlockMap()
-    );
-
-    // 创建新的 EditorState 对象
-    const newEditorState = EditorState.push(editorState, newContentState, 'insert-fragment');
-    setEditorState(newEditorState);
-  };
-
   return (
-    <div className={styles['flex-container']}>
-      <div className={styles.left}>
-        <NoteEditor
+    <div className={styles['grid-container']}>
+      <TableOfContents
+          className={styles["table-of-contents"]}
+          editor={editor}
           editorState={editorState}
           setEditorState={setEditorState}
-        />
-      </div>
-      <div className={styles.right}>Right Side</div>
+      />
+      <Toolbar
+        className={styles["toolbar"]}
+        editor={editor}
+        editorState={editorState}
+        setEditorState={setEditorState}
+      />
+      <DraftEditor
+        className={styles["editor"]}
+        editor={editor}
+        editorState={editorState}
+        setEditorState={setEditorState}
+      />
+      <div className={styles["vars"]}>Vars</div>
+      <div className={styles["var-editor"]}>Var Editor</div>
     </div>
   );
 };
 
-export default GridComponent;
+export default Editor;

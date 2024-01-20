@@ -1,10 +1,6 @@
 import { EditorBlock, Modifier, EditorState } from 'draft-js';
 
 const BlockVarText = (props) => {
-  const handleClick = (event) => {
-    console.log('handleClick: ', props.block.getText())
-  };
-
   const varText = props.block.getData().get('varText', '这是一个文本变量');
 
   return (
@@ -19,7 +15,6 @@ const BlockVarText = (props) => {
         backgroundColor: '#f9f9f9'
       }}>
         {varText}
-        <button onMouseDown={handleClick}>修改文本变量</button>
       </div>
     </div>
   );

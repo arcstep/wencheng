@@ -2,8 +2,11 @@
 .layout {
   display: grid;
   grid-template-rows: auto 1fr;
-  height: 100vh;
   padding: 5px;
+}
+
+.header {
+  height: auto;
 }
 
 .body {

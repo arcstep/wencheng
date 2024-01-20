@@ -1,0 +1,10 @@
+.contnaier {
+  margin: 0 5px;
+  padding: 0px 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: text;
+  /* height: calc(100vh - 200px); */
+  background-color: #fff;
+}

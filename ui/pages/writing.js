@@ -43,7 +43,7 @@ const WritingPage = () => {
             <FontAwesomeIcon icon={faAppleAlt} />
           </button>
         </div>
-        <div className={`${styles.view} views`}>
+        <div className={styles.view}>
           {selectedButton === 1 && <Project handleChangeView={handleChangeView} />}
           {selectedButton === 2 && <Editor />}
         </div>

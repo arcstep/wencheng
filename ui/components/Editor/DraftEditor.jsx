@@ -1,15 +1,12 @@
 import React, { useEffect } from 'react';
 import { Editor, ContentState, EditorState, RichUtils, EditorBlock, Modifier } from 'draft-js';
-import TableOfContents from './TableOfContents';
 import { BlockVarText } from './BlockVarText';
-import Toolbar from './Toolbar';
 import "draft-js/dist/Draft.css";
 import { stateFromHTML } from 'draft-js-import-html'; // 用于将 HTML 文本转换为 Draft.js 的 ContentState 对象
 import { marked } from 'marked';
-import styles from './Index.module.css';
+import styles from './DraftEditor.module.css';
 
-export default function TextEditor({className, editorState, setEditorState}) {
-  const editor = React.useRef(null);
+export default function TextEditor({className, editor, editorState, setEditorState}) {
 
   const onChange = (newEditorState) => {
     // console.log('onChange: ', newEditorState)
@@ -95,30 +92,16 @@ export default function TextEditor({className, editorState, setEditorState}) {
   }
 
   return (
-    <div className={`${className} ${styles["editor-container"]}`}>
-      <Toolbar
-        className={styles["editor-toolbar"]}
+    <div className={`${className} ${styles["contnaier"]}`} onClick={focusEditor}>
+      <Editor
+        blockRendererFn={blockRendererFn}
+        ref={editor}
         editor={editor}
         editorState={editorState}
-        setEditorState={setEditorState}
+        onChange={onChange}
+        handlePastedText={handlePastedText}
+        handleKeyCommand={handleKeyCommand}
       />
-      <div className={styles.editor} onClick={focusEditor}>
-        <Editor
-          blockRendererFn={blockRendererFn}
-          ref={editor}
-          editor={editor}
-          editorState={editorState}
-          onChange={onChange}
-          handlePastedText={handlePastedText}
-          handleKeyCommand={handleKeyCommand}
-        />
-      </div>
-      {/* <TableOfContents
-        className={styles["table-of-contents"]}
-        editor={editor}
-        editorState={editorState}
-        setEditorState={setEditorState}
-      /> */}
     </div>
   );
 }

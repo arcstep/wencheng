@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@material-ui/core';
+import styles from './Index.module.css';
 
 const ProjectView = ({ handleChangeView }) => {
   const [projects, setProjects] = useState([
@@ -26,32 +27,34 @@ const ProjectView = ({ handleChangeView }) => {
   }
 
   return (
-    <div>
-      <Button onClick={handleAdd}>创建新项目</Button>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>项目名称</TableCell>
-              <TableCell>项目描述</TableCell>
-              <TableCell>操作</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {projects.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>{project.name}</TableCell>
-                <TableCell>{project.description}</TableCell>
-                <TableCell>
-                  <Button onClick={() => handleWrite(project.id)}>切换</Button>
-                  <Button onClick={() => handleUpdate(project.id)}>修改</Button>
-                  <Button onClick={() => handleDelete(project.id)}>删除</Button>
-                </TableCell>
+    <div className = {styles['flex-container']}>
+      <div>
+        <Button onClick={handleAdd}>创建新项目</Button>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>项目名称</TableCell>
+                <TableCell>项目描述</TableCell>
+                <TableCell>操作</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {projects.map((project) => (
+                <TableRow key={project.id}>
+                  <TableCell>{project.name}</TableCell>
+                  <TableCell>{project.description}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleWrite(project.id)}>切换</Button>
+                    <Button onClick={() => handleUpdate(project.id)}>修改</Button>
+                    <Button onClick={() => handleDelete(project.id)}>删除</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </div>
   );
 };

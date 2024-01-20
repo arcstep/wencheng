@@ -58,16 +58,14 @@ export default function TableOfContents({ className, editor, editorState, setEdi
 
   return (
     <div className={className}>
-      <ul>
-        {tableOfContents.map(item => {
-          console.log("item.level: ", item.level); 
-          return(
-            <li key={item.key} onClick={() => handleItemClick(item.key)} style={{ paddingLeft: `${item.level - 1}em` }} >
-              {item.text}
-            </li>
-          );
-        })}
-      </ul>
+      {tableOfContents.map(item => {
+        console.log("item.level: ", item.level); 
+        return(
+          <div key={item.key} onClick={() => handleItemClick(item.key)} style={{ paddingLeft: `${item.level - 1}em` }} >
+            {item.text}
+          </div>
+        );
+      })}
     </div>
   );
 }

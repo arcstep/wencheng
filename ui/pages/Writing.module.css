@@ -1,7 +1,6 @@
 .grid-container {
   display: grid;
-  grid-template-columns: 50px auto;
-  height: 100vh;
+  grid-template-columns: 30px auto;
 }
 
 .toolbar {
@@ -14,10 +13,10 @@
 .toolbar button {
   width: 50px;
   height: 50px;
-  margin: 5px -5px 0 5px;
+  margin: 5px 5px 0 5px;
 }
 
 .view {
   overflow: auto;
-  margin-left: 20px;
+  margin-left: 0px;
 }
