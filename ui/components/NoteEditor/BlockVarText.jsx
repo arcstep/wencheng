@@ -6,7 +6,7 @@ const BlockVarText = (props) => {
 
   useEffect(() => {
     const blockText = props.block.getText();
-    setVarName(blockText.replace(/^@插入文本[：:]+/g, ''));
+    setVarName(blockText.replace(/^@文本变量[ ]+/g, ''));
   }, [props.block]);
 
   return (

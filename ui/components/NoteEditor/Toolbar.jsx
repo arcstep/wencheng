@@ -15,7 +15,7 @@ export default function Toolbar({ className, editor, editorState, setEditorState
     {label: <FaListUl />, style: 'unordered-list-item'},
     {label: <FaListOl />, style: 'ordered-list-item'},
     {label: <FaCode />, style: 'code-block'},
-    {label: '引用文本', style: 'var-text-block'},
+    {label: '文本变量', style: 'var-text-block'},
   ];
   
   const inlineStyles = [
@@ -53,12 +53,12 @@ export default function Toolbar({ className, editor, editorState, setEditorState
 
     // 之前是引用文本，现在点击任何按钮都删除开头的「@引用文本」这几个字符
     if (currentBlockType === 'var-text-block') {
-      text = text.replace(/^@引用文本[ ]+/g, '');
+      text = text.replace(/^@文本变量[ ]+/g, '');
     }
     
     // 之前不是引用文本，现在点击“引用文本”添加
     if (blockType === 'var-text-block' && currentBlockType !== 'var-text-block') {
-      text = '@引用文本 ' + text;
+      text = '@文本变量 ' + text;
     }
 
     // 构造返回块

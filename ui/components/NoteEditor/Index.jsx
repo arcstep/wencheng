@@ -8,7 +8,7 @@ import { stateFromHTML } from 'draft-js-import-html'; // 用于将 HTML 文本�
 import { marked } from 'marked';
 import styles from './Index.module.css';
 
-export default function TextEditor({className, style, editorState, setEditorState}) {
+export default function TextEditor({className, editorState, setEditorState}) {
   const editor = React.useRef(null);
 
   const onChange = (newEditorState) => {
@@ -23,7 +23,7 @@ export default function TextEditor({className, style, editorState, setEditorStat
   }, []); // 当 editorState 更新时，执行 focus
 
   const blockRendererFn = (block) => {
-    if (/^@引用文本[ ]+/g.test(block.text)) {
+    if (/^@文本变量[ ]+/g.test(block.getText())) {
       return {
         component: BlockVarText,
         props: {
