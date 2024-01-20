@@ -1,7 +1,7 @@
 // Toolbar.jsx
 import React from 'react';
 import { FaListUl, FaListOl, FaCode } from 'react-icons/fa';
-import { EditorState, RichUtils } from 'draft-js';
+import { EditorState, RichUtils, Modifier, SelectionState } from 'draft-js';
 import './Toolbar.module.css';
 
 export default function Toolbar({ className, editor, editorState, setEditorState }) {
@@ -15,6 +15,7 @@ export default function Toolbar({ className, editor, editorState, setEditorState
     {label: <FaListUl />, style: 'unordered-list-item'},
     {label: <FaListOl />, style: 'ordered-list-item'},
     {label: <FaCode />, style: 'code-block'},
+    {label: '引用文本', style: 'var-text-block'},
   ];
   
   const inlineStyles = [
@@ -29,12 +30,60 @@ export default function Toolbar({ className, editor, editorState, setEditorState
   }
 
   function toggleBlockType(blockType) {
-    setEditorState(
-      RichUtils.toggleBlockType(
-        editorState,
-        blockType
-      )
+    // 切换样式
+    const currentBlockType = RichUtils.getCurrentBlockType(editorState);
+    let newBlockType = blockType;
+
+    if (currentBlockType === blockType) {
+      newBlockType = 'unstyled';
+    }
+
+    //
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+    let newContentState = Modifier.setBlockType(
+      contentState,
+      selectionState,
+      newBlockType
     );
+
+    const blockKey = selectionState.getStartKey();
+    const block = newContentState.getBlockForKey(blockKey);
+    let text = block.getText();
+
+    // 之前是引用文本，现在点击任何按钮都删除开头的「@引用文本」这几个字符
+    if (currentBlockType === 'var-text-block') {
+      text = text.replace(/^@引用文本[ ]+/g, '');
+    }
+    
+    // 之前不是引用文本，现在点击“引用文本”添加
+    if (blockType === 'var-text-block' && currentBlockType !== 'var-text-block') {
+      text = '@引用文本 ' + text;
+    }
+
+    // 构造返回块
+    const blockSelection = new SelectionState({
+      anchorKey: blockKey,
+      anchorOffset: 0,
+      focusKey: blockKey,
+      focusOffset: block.getLength(),
+    });
+
+    newContentState = Modifier.replaceText(
+      newContentState,
+      blockSelection,
+      text
+    );
+
+    let newEditorState = EditorState.push(editorState, newContentState, 'change-block-type');
+
+    // 强制选择当前的块
+    newEditorState = EditorState.forceSelection(
+      newEditorState,
+      newEditorState.getSelection()
+    );
+
+    setEditorState(newEditorState);
     focusEditor();
   }
 
@@ -48,16 +97,6 @@ export default function Toolbar({ className, editor, editorState, setEditorState
     setEditorState(EditorState.forceSelection(newState, selection));
     focusEditor();
   }
-
-  const toggleH6 = (event) => {
-    // Prevent the default mousedown event behavior
-    event.preventDefault();
-
-    // Toggle the H6 style
-    const newEditorState = RichUtils.toggleBlockType(editorState, 'header-six');
-    setEditorState(newEditorState);
-    focusEditor();
-  };
 
   function printText() {
     const selection = editorState.getSelection();
@@ -88,17 +127,20 @@ export default function Toolbar({ className, editor, editorState, setEditorState
           }
         `}
       </style>
-      {blockTypes.map((type) =>
-        <button
-          key={type.style}
-          onMouseDown={(event) => {
-            event.preventDefault();
-            toggleBlockType(type.style);
-          }}
-          className={RichUtils.getCurrentBlockType(editorState) === type.style ? 'active' : ''}
-        >
-          {type.label}
-        </button>
+      {blockTypes.map((type) => {
+          console.log("type: ", type)
+          console.log(RichUtils.getCurrentBlockType(editorState))
+          return <button
+            key={type.style}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              toggleBlockType(type.style);
+            }}
+            className={RichUtils.getCurrentBlockType(editorState) === type.style ? 'active' : ''}
+          >
+            {type.label}
+          </button>
+        }
       )}
 
       {inlineStyles.map((type) =>
@@ -114,8 +156,6 @@ export default function Toolbar({ className, editor, editorState, setEditorState
         </button>
       )}
 
-      <button onMouseDown={toggleH6}>H6-M</button>
-      <button onClick={toggleH6}>H6</button>
       <button onMouseDown={printText}>Print Text</button>
 
     </div>

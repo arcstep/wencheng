@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Editor, ContentState, EditorState, RichUtils, EditorBlock, Modifier } from 'draft-js';
 import TableOfContents from './TableOfContents';
+import { BlockVarText } from './BlockVarText';
 import Toolbar from './Toolbar';
 import "draft-js/dist/Draft.css";
 import { stateFromHTML } from 'draft-js-import-html'; // 用于将 HTML 文本转换为 Draft.js 的 ContentState 对象
@@ -22,16 +23,25 @@ export default function TextEditor({className, style, editorState, setEditorStat
   }, []); // 当 editorState 更新时，执行 focus
 
   const blockRendererFn = (block) => {
-    return {
-      component: (props) => {
-        return <div data-key={props.block.getKey()}><EditorBlock {...props} /></div>;
-      },
-      props: {
-        className: 'editor-block',
-      },
-      editable: true,
-    };
-  }
+    if (/^@引用文本[ ]+/g.test(block.text)) {
+      return {
+        component: BlockVarText,
+        props: {
+          className: 'var-text-block',
+        },
+      };
+    } else {
+      return {
+        component: (props) => {
+          return <div data-key={props.block.getKey()}><EditorBlock {...props} /></div>;
+        },
+        props: {
+          className: 'editor-block',
+        },
+        editable: true,
+      };
+    }
+  };
 
   function focusEditor() {
     if (editor.current) {
