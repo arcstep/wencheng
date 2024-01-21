@@ -4,6 +4,8 @@ import styles from './Index.module.css';
 import { ContentState, ContentBlock, genKey, EditorState } from 'draft-js';
 import TableOfContents from './TableOfContents';
 import Toolbar from './Toolbar';
+import VarEditor from './VarEditor'
+import { block } from 'marked';
 
 const Editor = () => {
   const editor = React.useRef(null);
@@ -26,9 +28,20 @@ const Editor = () => {
       text: '你好，文成公主',
     }),
   ];
+
   const contentState = ContentState.createFromBlockArray(blocks);
-  // const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState));
+
+  const [currentBlockType, setCurrentBlockType] = useState('unstyled');
+  const [currentBlockText, setCurrentBlockText] = useState('');
+
+  const onChangeCurrentBlock = (blockType, blockText) => {
+    console.log('Current block type:', blockType);
+    console.log('Current block text:', blockText);
+
+    setCurrentBlockType(blockType);
+    setCurrentBlockText(blockText);
+  }
 
   return (
     <div className={styles['grid-container']}>
@@ -45,13 +58,25 @@ const Editor = () => {
         setEditorState={setEditorState}
       />
       <DraftEditor
-        className={styles["editor"]}
+        className={styles["doc-editor"]}
         editor={editor}
         editorState={editorState}
         setEditorState={setEditorState}
+        setCurrentBlock={onChangeCurrentBlock}
       />
-      <div className={styles["vars"]}>Vars</div>
-      <div className={styles["var-editor"]}>Var Editor</div>
+      <div className={styles["vars"]}>
+        Vars<br/>
+        Vars<br/>
+        Vars<br/>
+        Vars<br/>
+        Vars<br/>
+        Vars<br/>
+      </div>
+      <VarEditor
+        className={styles["var-editor"]}
+        blockType={currentBlockType}
+        blockText={currentBlockText}
+      />
     </div>
   );
 };

@@ -35,7 +35,7 @@ export default function TableOfContents({ className, editor, editorState, setEdi
           level = 0;  // 如果 levelString 不是预期的值，那么 level 就设为 0
       }
       const key = block.getKey();
-      console.log("key: ", key, "text: ", text, "level: ", level)
+      // console.log("key: ", key, "text: ", text, "level: ", level)
       return { text, level, key };
     }).toArray();
     setTableOfContents(tableOfContents);
@@ -59,7 +59,7 @@ export default function TableOfContents({ className, editor, editorState, setEdi
   return (
     <div className={className}>
       {tableOfContents.map(item => {
-        console.log("item.level: ", item.level); 
+        // console.log("item.level: ", item.level); 
         return(
           <div key={item.key} onClick={() => handleItemClick(item.key)} style={{ paddingLeft: `${item.level - 1}em` }} >
             {item.text}

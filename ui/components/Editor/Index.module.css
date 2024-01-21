@@ -1,12 +1,12 @@
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
 }
 
 .table-of-contents {
   grid-column: 1;
-  grid-row: 1 / span 2;
+  grid-row: 1 / span 3;
 
   overflow: auto;
   height: calc(100vh - 150px);
@@ -19,9 +19,9 @@
   background-color: #fff; 
 }
 
-.editor {
+.doc-editor {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 2 / span 2;
 
   overflow: auto;
   height: calc(100vh - 200px);
@@ -45,10 +45,10 @@
 
 .vars {
   grid-column: 3;
-  grid-row: 1;
+  grid-row: 1 / span 2;
 }
 
 .var-editor {
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 3;
 }
