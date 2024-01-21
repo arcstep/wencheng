@@ -1,0 +1,19 @@
+.container {
+  margin: 0 5px;
+  padding: 0px 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: text;
+  background-color: #fff;
+}
+
+.container .editor {
+  /* margin: 0px 15px; */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+  width: 100%;
+  max-height: 400px;
+}
