@@ -10,23 +10,15 @@ export default function TextEditor({className, editor, editorState, setEditorSta
 
   const onChange = (newEditorState) => {
     // 获取当前光标所在的内容块
-    const oldSelectionState = editorState.getSelection();
-    const oldStartKey = oldSelectionState.getStartKey();
-    const oldCurrentBlock = editorState
-      .getCurrentContent()
-      .getBlockForKey(oldStartKey);
-
     const newSelectionState = newEditorState.getSelection();
     const newStartKey = newSelectionState.getStartKey();
     const newCurrentBlock = newEditorState
       .getCurrentContent()
       .getBlockForKey(newStartKey);
 
-    if (oldCurrentBlock !== newCurrentBlock) {
-      const blockType = newCurrentBlock.getType();
-      const blockText = newCurrentBlock.getText();
-      setCurrentBlock(blockType, blockText);
-    }
+    const blockType = newCurrentBlock.getType();
+    const blockText = newCurrentBlock.getText();
+    setCurrentBlock(blockType, blockText);
 
     // 更新 editorState
     setEditorState(newEditorState);

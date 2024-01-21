@@ -5,7 +5,6 @@ import { ContentState, ContentBlock, genKey, EditorState } from 'draft-js';
 import TableOfContents from './TableOfContents';
 import Toolbar from './Toolbar';
 import VarEditor from './VarEditor'
-import { block } from 'marked';
 
 const Editor = () => {
   const editor = React.useRef(null);
@@ -35,12 +34,13 @@ const Editor = () => {
   const [currentBlockType, setCurrentBlockType] = useState('unstyled');
   const [currentBlockText, setCurrentBlockText] = useState('');
 
-  const onChangeCurrentBlock = (blockType, blockText) => {
-    console.log('Current block type:', blockType);
-    console.log('Current block text:', blockText);
-
-    setCurrentBlockType(blockType);
-    setCurrentBlockText(blockText);
+  const onChangeCurrentBlock = (blockType = null, blockText = null) => {
+    if (blockText !== null && currentBlockText !== blockText) {
+      setCurrentBlockText(blockText);
+    }
+    if (blockType !== null && currentBlockType !== blockType) {
+      setCurrentBlockType(blockType);
+    }
   }
 
   return (
@@ -56,6 +56,7 @@ const Editor = () => {
         editor={editor}
         editorState={editorState}
         setEditorState={setEditorState}
+        setCurrentBlockType={blockType => onChangeCurrentBlock(blockType, null)}
       />
       <DraftEditor
         className={styles["doc-editor"]}

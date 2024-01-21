@@ -4,7 +4,7 @@ import { FaListUl, FaListOl, FaCode } from 'react-icons/fa';
 import { EditorState, RichUtils, Modifier, SelectionState } from 'draft-js';
 import './Toolbar.module.css';
 
-export default function Toolbar({ className, editor, editorState, setEditorState }) {
+export default function Toolbar({ className, editor, editorState, setEditorState, setCurrentBlockType }) {
   const blockTypes = [
     {label: "H1", style: 'header-one'},
     {label: "H2", style: 'header-two'},
@@ -37,6 +37,10 @@ export default function Toolbar({ className, editor, editorState, setEditorState
       newBlockType = 'unstyled';
     }
 
+    // 更新当前块的类型
+    setCurrentBlockType(newBlockType);
+
+    // 更新 editorState
     const contentState = editorState.getCurrentContent();
     const selectionState = editorState.getSelection();
     let newContentState = Modifier.setBlockType(
