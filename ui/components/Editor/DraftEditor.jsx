@@ -6,7 +6,7 @@ import { stateFromHTML } from 'draft-js-import-html'; // 用于将 HTML 文本�
 import { marked } from 'marked';
 import styles from './DraftEditor.module.css';
 
-export default function TextEditor({className, editor, editorState, setEditorState, setCurrentBlock}) {
+export default function TextEditor({className, varTexts, editor, editorState, setEditorState, setCurrentBlock}) {
 
   const onChange = (newEditorState) => {
     // 获取当前光标所在的内容块
@@ -15,6 +15,7 @@ export default function TextEditor({className, editor, editorState, setEditorSta
     const newCurrentBlock = newEditorState
       .getCurrentContent()
       .getBlockForKey(newStartKey);
+    console.log("onChange: ", newCurrentBlock.getType(), newCurrentBlock.getText())
 
     const blockType = newCurrentBlock.getType();
     const blockText = newCurrentBlock.getText();
@@ -30,20 +31,38 @@ export default function TextEditor({className, editor, editorState, setEditorSta
     }
   }, []); // 当 editorState 更新时，执行 focus
 
+  const getVarText = (text) => {
+    if(text in varTexts) {
+      return varTexts[text].text;
+    } else {
+      return null;
+    }
+  };
+
   const blockRendererFn = (block) => {
     const type = block.getType();
 
     let Component = EditorBlock;
+    let varText = null;
     if (type === 'var-text-block') {
       Component = BlockVarText;
+      //
+      const varName = block.getText();
+      varText = getVarText(varName);
+      console.log(varName, ": ", varText)
     }
 
     return {
       component: (props) => {
-        return <div data-key={props.block.getKey()}><Component {...props} /></div>;
+        return (
+          <div data-key={props.block.getKey()}>
+            <Component {...props} varText={varText} />
+          </div>
+        );
       },
       props: {
         className: 'editor-block',
+        varText: varText,
       },
       editable: true,
     };

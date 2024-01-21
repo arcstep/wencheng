@@ -6,6 +6,12 @@ import TableOfContents from './TableOfContents';
 import Toolbar from './Toolbar';
 import VarEditor from './VarEditor'
 
+class VarText {
+  constructor({ text }) {
+    this.text = text;
+  }
+}
+
 const Editor = () => {
   const editor = React.useRef(null);
 
@@ -27,6 +33,12 @@ const Editor = () => {
       text: '你好，文成公主',
     }),
   ];
+
+  // 默认的文本变量
+  const [varTexts, setVarTexts] = useState({
+    'abc': new VarText({ text: '这是一个文本变量1' }),
+    '背景摘要': new VarText({ text: '这是一个文本变量2' }),
+  })
 
   const contentState = ContentState.createFromBlockArray(blocks);
   const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState));
@@ -60,21 +72,19 @@ const Editor = () => {
       />
       <DraftEditor
         className={styles["doc-editor"]}
+        varTexts={varTexts}
         editor={editor}
         editorState={editorState}
         setEditorState={setEditorState}
         setCurrentBlock={onChangeCurrentBlock}
       />
       <div className={styles["vars"]}>
-        Vars<br/>
-        Vars<br/>
-        Vars<br/>
-        Vars<br/>
-        Vars<br/>
-        Vars<br/>
+        变量文本<br/>
+        动态生成文本<br/>
       </div>
       <VarEditor
         className={styles["var-editor"]}
+        varTexts={varTexts}
         blockType={currentBlockType}
         blockText={currentBlockText}
       />

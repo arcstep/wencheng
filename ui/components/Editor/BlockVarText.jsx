@@ -1,12 +1,39 @@
-import { EditorBlock, Modifier, EditorState } from 'draft-js';
+import React, { useState, useEffect } from 'react';
+import { EditorBlock } from 'draft-js';
 
 const BlockVarText = (props) => {
-  const varText = props.block.getData().get('varText', '这是一个文本变量');
+  const [varText, setVarText] = useState('');
+
+  useEffect(() => {
+    setVarText(props.varText);
+  }, [props.varText]);
+
+  const getVarStyle = () => {
+    if (varText && varText.length > 0) {
+      return {
+        border: '1px solid green',
+        boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
+        borderRadius: '4px',
+        padding: '10px',
+        margin: '10px',
+        backgroundColor: '#f9f9f9'
+      };
+    } else {
+      return {
+        border: '1px solid red',
+        boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
+        borderRadius: '4px',
+        padding: '10px',
+        margin: '10px',
+        backgroundColor: '#f9f9f9'
+      };
+    }
+  }
 
   return (
-    <div data-key={props.block.getKey()} style={{ margin: '10px', padding: '10px', border: '1px solid green' }}>
+    <div data-key={props.block.getKey()} style={getVarStyle()}>
       <EditorBlock {...props} />
-      <div style={{
+      {/* <div style={{
         border: '1px solid #ccc',
         boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '4px',
@@ -15,7 +42,7 @@ const BlockVarText = (props) => {
         backgroundColor: '#f9f9f9'
       }}>
         {varText}
-      </div>
+      </div> */}
     </div>
   );
 };
