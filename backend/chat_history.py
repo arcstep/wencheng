@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from langchain.memory import FileChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
 from pathlib import Path
 from typing import Callable, Union
 from typing_extensions import TypedDict
@@ -37,18 +36,6 @@ def create_session_factory() -> Callable[[str], BaseChatMessageHistory]:
     if not Path(base_dir_).exists():
         base_dir_.mkdir(parents=True)
     return get_chat_history
-
-class InputChat(BaseModel):
-    input: str
-
-def with_chat_history(chain):
-    r = RunnableWithMessageHistory(
-        chain,
-        create_session_factory(),
-        input_messages_key="question",
-        history_messages_key="history",
-    ).with_types(input_type=InputChat)
-    return r
 
 def is_history_session_exists(session_id: str):
     file_path = f"{wenchdeng_chat_histories_folder}/{session_id}.json"
