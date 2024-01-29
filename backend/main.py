@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnableLambda
 from langchain.schema.output_parser import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.globals import set_debug
@@ -32,7 +33,7 @@ print("CORS origins:", origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -86,6 +87,24 @@ async def chat_once(input: ChatOnce):
     llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0)
     chain = (prompt | llm | parser)
     return chain.stream(input = input.dict(), config={"callbacks": [handler]})
+
+#####################################
+
+def add_one(x: int) -> str:
+    """Add one to the given number."""
+    return f"The result is: {x + 1}"
+
+handler = CallbackHandler(trace_name="add_one", user_id="wencheng")
+chain = RunnableLambda(add_one).with_config({"callbacks": [handler]})
+add_routes(app, chain, path = "/langserve/add_one")
+
+handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+prompt = ChatPromptTemplate.from_template(
+    """{question}""")
+llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0)
+chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+
+add_routes(app, chain, path = "/langserve/chat_once")
 
 #####################################
 
