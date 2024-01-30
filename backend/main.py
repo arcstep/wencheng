@@ -8,6 +8,9 @@ from langserve import add_routes
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from langfuse.callback import CallbackHandler
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_community.llms import Tongyi
 
 # 对话历史
 from backend.chat_history import create_session_factory, get_chat_history_by_session_id, create_new_chat, is_chat_session_exist
@@ -92,19 +95,57 @@ async def chat_once(input: ChatOnce):
 
 def add_one(x: int) -> str:
     """Add one to the given number."""
-    return f"The result is: {x + 1}"
+    return f'The result is: {x + 1}'
+
+def add(input: dict) -> str:
+    """Add one to the given number."""
+    return f'The result is: {input["x"] + input["y"]}'
 
 handler = CallbackHandler(trace_name="add_one", user_id="wencheng")
 chain = RunnableLambda(add_one).with_config({"callbacks": [handler]})
 add_routes(app, chain, path = "/langserve/add_one")
 
+handler = CallbackHandler(trace_name="add", user_id="wencheng")
+chain = RunnableLambda(add).with_config({"callbacks": [handler]})
+add_routes(app, chain, path = "/langserve/add")
+
+#####################################
+
 handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
 prompt = ChatPromptTemplate.from_template(
     """{question}""")
-llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0)
+llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0.3)
 chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
 
-add_routes(app, chain, path = "/langserve/chat_once")
+add_routes(app, chain, path = "/langserve/gpt35")
+
+#####################################
+
+handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+prompt = ChatPromptTemplate.from_template(
+    """{question}""")
+llm = ChatOpenAI(model = "gpt-4-1106-preview", streaming = True, temperature = 0.3)
+chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+
+add_routes(app, chain, path = "/langserve/gpt4")
+
+#####################################
+handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+prompt = ChatPromptTemplate.from_template(
+    """{question}""")
+llm = Tongyi(model_name = "qwen-plus", streaming = True, temperature = 0.3)
+chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+
+add_routes(app, chain, path = "/langserve/tongyi")
+
+#####################################
+handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+prompt = ChatPromptTemplate.from_template(
+    """{question}""")
+llm = Tongyi(model_name = "chatglm3-6b", streaming = True, temperature = 0.3)
+chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+
+add_routes(app, chain, path = "/langserve/chatglm6b")
 
 #####################################
 
