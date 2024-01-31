@@ -17,7 +17,7 @@ from backend.chat_history import create_session_factory, get_chat_history_by_ses
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 # 设置调试模式
-set_debug(True)
+set_debug(False)
 
 # 加载 .env 到环境变量
 import os
@@ -25,14 +25,15 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv(), override=True)
 print("LANGFUSE_PUBLIC_KEY: ", os.getenv("LANGFUSE_PUBLIC_KEY"))
 
+# 
 app = FastAPI(
     title="Wencheng LLM Server",
     version="1.0",
     description="Wencheng Agent server based on LLM",
 )
 
-origins = os.getenv("WENCHENG_CORS_ORIGINS").split(",")
-print("CORS origins:", origins)
+# origins = os.getenv("WENCHENG_CORS_ORIGINS").split(",")
+# print("CORS origins:", origins)
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +48,7 @@ app.add_middleware(
 parser = StrOutputParser()
 
 #####################################
+# GPT3 with History
 
 class ChatStream(BaseModel):
     question: str
@@ -78,6 +80,7 @@ async def chat_stream(input: ChatStream):
         })
 
 #####################################
+# GPT3 with History
 
 class ChatOnce(BaseModel):
     question: str
@@ -87,11 +90,12 @@ async def chat_once(input: ChatOnce):
     handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
     prompt = ChatPromptTemplate.from_template(
         """{question}""")
-    llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0)
+    llm = ChatOpenAI(model = "gpt-3.5-turbo", streaming = True, temperature = 0)
     chain = (prompt | llm | parser)
     return chain.stream(input = input.dict(), config={"callbacks": [handler]})
 
 #####################################
+# lambda
 
 def add_one(x: int) -> str:
     """Add one to the given number."""
@@ -110,16 +114,18 @@ chain = RunnableLambda(add).with_config({"callbacks": [handler]})
 add_routes(app, chain, path = "/langserve/add")
 
 #####################################
+# GPT3
 
 handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
 prompt = ChatPromptTemplate.from_template(
     """{question}""")
-llm = ChatOpenAI(model = "gpt-3.5-turbo-16k", streaming = True, temperature = 0.3)
+llm = ChatOpenAI(model = "gpt-3.5-turbo-1106", streaming = True, temperature = 0.3)
 chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
 
 add_routes(app, chain, path = "/langserve/gpt35")
 
 #####################################
+# GPT4
 
 handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
 prompt = ChatPromptTemplate.from_template(
@@ -130,6 +136,8 @@ chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
 add_routes(app, chain, path = "/langserve/gpt4")
 
 #####################################
+# QWen-plus
+
 handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
 prompt = ChatPromptTemplate.from_template(
     """{question}""")
@@ -139,6 +147,8 @@ chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
 add_routes(app, chain, path = "/langserve/tongyi")
 
 #####################################
+# ChatGLM3-6B
+
 handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
 prompt = ChatPromptTemplate.from_template(
     """{question}""")
@@ -148,6 +158,7 @@ chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
 add_routes(app, chain, path = "/langserve/chatglm6b")
 
 #####################################
+# auto-prompt
 
 class AutoPrompt(BaseModel):
     topic: str
