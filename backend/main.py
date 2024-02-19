@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from langchain_openai import ChatOpenAI
+from langchain_chinese import ChatZhipuAI
 from langchain_core.runnables import RunnableLambda
 from langchain.schema.output_parser import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -27,7 +28,7 @@ print("LANGFUSE_PUBLIC_KEY: ", os.getenv("LANGFUSE_PUBLIC_KEY"))
 
 # 
 app = FastAPI(
-    title="Wencheng LLM Server",
+    title="Wencheng Chat Server",
     version="1.0",
     description="Wencheng Agent server based on LLM",
 )
@@ -105,57 +106,82 @@ def add(input: dict) -> str:
     """Add one to the given number."""
     return f'The result is: {input["x"] + input["y"]}'
 
-handler = CallbackHandler(trace_name="add_one", user_id="wencheng")
-chain = RunnableLambda(add_one).with_config({"callbacks": [handler]})
-add_routes(app, chain, path = "/langserve/add_one")
+def create_add_one():
+    handler = CallbackHandler(trace_name="add_one", user_id="wencheng")
+    chain = RunnableLambda(add_one).with_config({"callbacks": [handler]})
+    return chain
+add_routes(app, create_add_one(), path = "/langserve/add_one")
 
-handler = CallbackHandler(trace_name="add", user_id="wencheng")
-chain = RunnableLambda(add).with_config({"callbacks": [handler]})
-add_routes(app, chain, path = "/langserve/add")
+def create_add():
+    handler = CallbackHandler(trace_name="add", user_id="wencheng")
+    chain = RunnableLambda(add).with_config({"callbacks": [handler]})
+    return chain
+add_routes(app, create_add(), path = "/langserve/add")
+
+#####################################
+# GLM4 - ZhipuAI
+
+def create_zhipu():
+    handler = CallbackHandler(trace_name="zhipu_chat", user_id="wencheng")
+    prompt = ChatPromptTemplate.from_template(
+        """{question}""")
+    llm = ChatZhipuAI(model="glm-4", temperature=0.3)
+    chain = (prompt | llm | StrOutputParser()).with_config({"callbacks": [handler]})
+    return chain
+
+add_routes(app, create_zhipu(), path = "/langserve/zhipu")
 
 #####################################
 # GPT3
 
-handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-prompt = ChatPromptTemplate.from_template(
-    """{question}""")
-llm = ChatOpenAI(model = "gpt-3.5-turbo-1106", streaming = True, temperature = 0.3)
-chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+def create_gpt3():
+    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+    prompt = ChatPromptTemplate.from_template(
+        """{question}""")
+    llm = ChatOpenAI(model = "gpt-3.5-turbo-1106", streaming = True, temperature = 0.3)
+    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+    return chain
 
-add_routes(app, chain, path = "/langserve/gpt35")
+add_routes(app, create_gpt3(), path = "/langserve/gpt35")
 
 #####################################
 # GPT4
 
-handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-prompt = ChatPromptTemplate.from_template(
-    """{question}""")
-llm = ChatOpenAI(model = "gpt-4-1106-preview", streaming = True, temperature = 0.3)
-chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+def craete_gpt4():
+    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+    prompt = ChatPromptTemplate.from_template(
+        """{question}""")
+    llm = ChatOpenAI(model = "gpt-4-1106-preview", streaming = True, temperature = 0.3)
+    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+    return chain
 
-add_routes(app, chain, path = "/langserve/gpt4")
+add_routes(app, craete_gpt4(), path = "/langserve/gpt4")
 
 #####################################
 # QWen-plus
 
-handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-prompt = ChatPromptTemplate.from_template(
-    """{question}""")
-llm = Tongyi(model_name = "qwen-plus", streaming = True, temperature = 0.3)
-chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+def create_qwen():
+    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+    prompt = ChatPromptTemplate.from_template(
+        """{question}""")
+    llm = Tongyi(model_name = "qwen-plus", streaming = True, temperature = 0.3)
+    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+    return chain
 
-add_routes(app, chain, path = "/langserve/tongyi")
+add_routes(app, create_qwen(), path = "/langserve/tongyi")
 
 #####################################
 # ChatGLM3-6B
 
-handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-prompt = ChatPromptTemplate.from_template(
-    """{question}""")
-llm = Tongyi(model_name = "chatglm3-6b", streaming = True, temperature = 0.3)
-chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+def create_glm6b():
+    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
+    prompt = ChatPromptTemplate.from_template(
+        """{question}""")
+    llm = Tongyi(model_name = "chatglm3-6b", streaming = True, temperature = 0.3)
+    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
+    return chain
 
-add_routes(app, chain, path = "/langserve/chatglm6b")
+add_routes(app, create_glm6b(), path = "/langserve/chatglm6b")
 
 #####################################
 # auto-prompt
