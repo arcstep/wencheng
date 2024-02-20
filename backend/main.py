@@ -49,83 +49,18 @@ app.add_middleware(
 parser = StrOutputParser()
 
 #####################################
-# GPT3 with History
-
-class ChatStream(BaseModel):
-    question: str
-    session_id: str
-
-@app.post("/chat_stream")
-async def chat_stream(input: ChatStream):
-    handler = CallbackHandler(trace_name="chat_stream", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You're an assistant by the name of 文成公主."),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{question}"),
-    ])
-    # 获取 session_id 并传递给 .stream() 方法
-    input_dict = input.dict(by_alias=True)
-    llm = ChatOpenAI(model = "gpt-3.5-turbo", streaming = True, temperature = 0.7)
-    chain = prompt | llm | parser
-    chain_with_history = RunnableWithMessageHistory(
-        chain,
-        get_session_history=create_session_factory(),
-        input_messages_key="question",
-        history_messages_key="history",
-    )
-
-    return chain_with_history.stream(
-        { "question": input_dict["question"] },
-        { "callbacks": [handler],
-          "configurable": {'session_id': input_dict["session_id"]}
-        })
-
-#####################################
-# GPT3 with History
-
-class ChatOnce(BaseModel):
-    question: str
-
-@app.post("/chat_once")
-async def chat_once(input: ChatOnce):
-    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
-    llm = ChatOpenAI(model = "gpt-3.5-turbo", streaming = True, temperature = 0)
-    chain = (prompt | llm | parser)
-    return chain.stream(input = input.dict(), config={"callbacks": [handler]})
-
-#####################################
-# lambda
-
-def add_one(x: int) -> str:
-    """Add one to the given number."""
-    return f'The result is: {x + 1}'
-
-def add(input: dict) -> str:
-    """Add one to the given number."""
-    return f'The result is: {input["x"] + input["y"]}'
-
-def create_add_one():
-    handler = CallbackHandler(trace_name="add_one", user_id="wencheng")
-    chain = RunnableLambda(add_one).with_config({"callbacks": [handler]})
-    return chain
-add_routes(app, create_add_one(), path = "/langserve/add_one")
-
-def create_add():
-    handler = CallbackHandler(trace_name="add", user_id="wencheng")
-    chain = RunnableLambda(add).with_config({"callbacks": [handler]})
-    return chain
-add_routes(app, create_add(), path = "/langserve/add")
-
-#####################################
 # GLM4 - ZhipuAI
 
 def create_zhipu():
     handler = CallbackHandler(trace_name="zhipu_chat", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
-    llm = ChatZhipuAI(model="glm-4", temperature=0.3)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "你是一个强力助手，不要啰嗦。"),
+        ("assistant", "我是一名AI助手，请向我提问。"),
+        ("human", "{question}"),
+    ])
+
+    llm = ChatZhipuAI(model="glm-4", temperature=0.01)
     chain = (prompt | llm | StrOutputParser()).with_config({"callbacks": [handler]})
     return chain
 
@@ -136,8 +71,7 @@ add_routes(app, create_zhipu(), path = "/langserve/zhipu")
 
 def create_gpt3():
     handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
+    prompt = ChatPromptTemplate.from_template("""{question}""")
     llm = ChatOpenAI(model = "gpt-3.5-turbo-1106", streaming = True, temperature = 0.3)
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
@@ -164,7 +98,7 @@ def create_qwen():
     handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
     prompt = ChatPromptTemplate.from_template(
         """{question}""")
-    llm = Tongyi(model_name = "qwen-plus", streaming = True, temperature = 0.3)
+    llm = Tongyi(model = "qwen-plus", streaming = True, temperature = 0.3)
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 

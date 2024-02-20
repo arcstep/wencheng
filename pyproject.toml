@@ -14,13 +14,12 @@ langserve = "^0.0.39"
 langchain-openai = "^0.0.6"
 python-dotenv = "^1.0.0"
 sse-starlette = "^1.8.2"
-pydantic = "^2.5.2"
+pydantic = "1.10.13"
 langchain-community = "^0.0.20"
 langfuse = "^2.6.0"
 uvicorn = "^0.27.0.post1"
 dashscope = "^1.14.1"
-langchain-chinese = "^0.2.7"
-zhipuai = "^2.0.1"
+langchain-chinese = "^0.2.8"
 
 [build-system]
 requires = ["poetry-core"]
