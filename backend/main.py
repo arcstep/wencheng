@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from langchain_openai import ChatOpenAI
-from langchain_chinese import ChatZhipuAI
+from langchain_zhipu import ChatZhipuAI
 from langchain_core.runnables import RunnableLambda
 from langchain.schema.output_parser import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -64,7 +64,11 @@ def create_zhipu():
     chain = (prompt | llm | StrOutputParser()).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_zhipu(), path = "/langserve/zhipu")
+add_routes(
+    app, 
+    create_zhipu(),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/langserve/zhipu")
 
 #####################################
 # GPT3
@@ -76,7 +80,7 @@ def create_gpt3():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_gpt3(), path = "/langserve/gpt35")
+add_routes(app, create_gpt3(), enabled_endpoints=["invoke", "stream"], path = "/langserve/gpt35")
 
 #####################################
 # GPT4
@@ -89,7 +93,7 @@ def craete_gpt4():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, craete_gpt4(), path = "/langserve/gpt4")
+add_routes(app, craete_gpt4(), enabled_endpoints=["invoke", "stream"], path = "/langserve/gpt4")
 
 #####################################
 # QWen-plus
@@ -102,7 +106,7 @@ def create_qwen():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_qwen(), path = "/langserve/tongyi")
+add_routes(app, create_qwen(), enabled_endpoints=["invoke", "stream"], path = "/langserve/tongyi")
 
 #####################################
 # ChatGLM3-6B
@@ -115,7 +119,7 @@ def create_glm6b():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_glm6b(), path = "/langserve/chatglm6b")
+add_routes(app, create_glm6b(), enabled_endpoints=["invoke", "stream"], path = "/langserve/chatglm6b")
 
 #####################################
 # auto-prompt

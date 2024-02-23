@@ -776,6 +776,24 @@ openai = ">=1.10.0,<2.0.0"
 tiktoken = ">=0.5.2,<1"
 
 [[package]]
+name = "langchain-zhipu"
+version = "4.0.6"
+description = "将智谱AI集成到LangChain"
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "langchain_zhipu-4.0.6-py3-none-any.whl", hash = "sha256:dc1954ebfb2359e49781b49060f9f5006343db4db961a6538b8f42b0e7479559"},
+    {file = "langchain_zhipu-4.0.6.tar.gz", hash = "sha256:d0dd42bfb45d2a66f71fbd071c8cee54fe121ec4e232a0c65a9256b26fcaed7f"},
+]
+
+[package.dependencies]
+cachetools = "4.2.2"
+httpx = ">=0.23.0,<0.24.0"
+langchain = ">=0.1.0,<0.2.0"
+pydantic = ">=1,<3"
+pyjwt = ">=2.8.0,<3.0.0"
+
+[[package]]
 name = "langfuse"
 version = "2.13.4"
 description = "A client library for accessing langfuse"
@@ -1843,23 +1861,14 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [[package]]
-name = "zhipuai-pydantic-v1"
+name = "zhipuai_pydantic_v1"
 version = "2.0.1"
 description = "dowgrade v1 for langchain (zhipu is an SDK library for accessing big model apis from ZhipuAI)"
 optional = false
-python-versions = ">=3.9,<4.0"
-files = [
-    {file = "zhipuai_pydantic_v1-2.0.1-py3-none-any.whl", hash = "sha256:1c65a2dc5112fc92e9a3500ca440ee1619c42280922ff97213eb52fff15acd60"},
-    {file = "zhipuai_pydantic_v1-2.0.1.tar.gz", hash = "sha256:681afef34535b06857f3c387a2ce3efee97b74ab0d49c0f6a52f1e7e6b658189"},
-]
-
-[package.dependencies]
-cachetools = "4.2.2"
-httpx = ">=0.23.0,<0.24.0"
-pydantic = "1.10.13"
-pyjwt = ">=2.8.0,<3.0.0"
+python-versions = "*"
+files = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f2b426f286b7696a8669bf0c7a75d14874c7060e6800f214831dcd59466b63fc"
+content-hash = "7a64db2cdcb2ca1f8cca8fd6b266253fd9591e9136376eb63cfb1795f6730b54"
