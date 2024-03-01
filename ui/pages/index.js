@@ -1,52 +1,34 @@
-import Head from 'next/head'
+// components/Layout.js
+import React from 'react';
 import styles from './index.module.css'
-import Link from 'next/link';
+import ChatRotbot from '../components/ChatRobot/Index';
 
-export default function Home() {
+const MyAgents = function() {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>文成公主</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          我是 文成公主!
-        </h1>
-
-        <p className={styles.description}>
-          会写作，会学习，我是基于GPT4的智能助手。
-        </p>
-
-        <div className={styles.grid}>
-          <Link href="/chat" className={styles.card}>
-            <h3>聊天 &rarr;</h3>
-            <p>陪你说什么话题都行</p>
-          </Link>
-
-          <Link href="/ingest" className={styles.card}>
-            <h3>投喂 &rarr;</h3>
-            <p>我的食物就是新知识</p>
-          </Link>
-
-          <Link href="/writing" className={styles.card}>
-            <h3>写作 &rarr;</h3>
-            <p>协助你编写文档</p>
-          </Link>
-
-          <Link href="/train" className={styles.card}>
-            <h3>教学 &rarr;</h3>
-            <p>
-              帮你理解和掌握
-            </p>
-          </Link>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        Powered by{' '} 薛宏伟 / 43801@qq.com
-      </footer>
+    <div>
+      <div>GLM4</div>
+      <div>GPT4</div>
+      <div>GPT3.5</div>
     </div>
   )
 }
+
+const Layout = () => {
+  return (
+    <div className={styles.layout}>
+      <div className={styles.header}>
+        <h1>我们随便聊聊</h1>
+      </div>
+
+      <div className={styles.agents}>
+        <MyAgents/>
+      </div>
+
+      <div className={styles.body}>
+        <ChatRotbot />
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

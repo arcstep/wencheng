@@ -2,13 +2,24 @@
 .layout {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  grid-template-areas: 
+    "header"
+    "history"
+    "sender";
   height: 100%;
 }
 
 .header {
+  grid-area: header;
   margin: 3px 5px;
 }
 
 .history {
+  grid-area: history;
   overflow-y: auto;
+}
+
+.sender {
+  grid-area: sender;
+  margin: 3px 5px;
 }
