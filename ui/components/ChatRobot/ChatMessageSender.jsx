@@ -4,7 +4,7 @@ import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
 import styles from './ChatMessageSender.module.css';
 
-function ChatMessageSender({ className, chatSessionId, newChatSession, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
+function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
   const [robotIsRequesting, setRobotIsRequesting] = useState(false);
   const [controller, setController] = useState(null);
@@ -62,11 +62,6 @@ function ChatMessageSender({ className, chatSessionId, newChatSession, messages,
     setRobotIsRequesting(false);
   };
 
-  const handleNewSession = () => {
-    if(newChatSession)
-        newChatSession()
-  }
-
   const handleSendClick = async () => {
     if (message.trim() === '') return;
  
@@ -88,6 +83,7 @@ function ChatMessageSender({ className, chatSessionId, newChatSession, messages,
     setController(newController);
     try {
       // 发送请求
+      console.log("init content: ", replyMessage.content);
       await replyFromBot(
         userMessage.content,
         // 流文本结束后
@@ -98,11 +94,12 @@ function ChatMessageSender({ className, chatSessionId, newChatSession, messages,
         },
         // 流文本增量处理
         (content) => {
-          replyMessage.content = content;
+          // 可以使用join("|")来调试流式效果
+          replyMessage.content = [replyMessage.content, content].join("");
           console.log("reply from robot: ", replyMessage.content)
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
-        robot_action,
+        apiAgent,
         controller,
         chatSessionId
       )
@@ -122,22 +119,11 @@ function ChatMessageSender({ className, chatSessionId, newChatSession, messages,
   return (
     <div className={className}>
       <div className={styles.container}>
-        <div>
-          {
-            newChatSession && <button className={styles['new-chat-session']} onClick={handleNewSession}>+</button>
-          }
-          <select className={styles['select-action']} value={robot_action} onChange={handleSelectChange}>
-            <option value="chat_stream">多轮聊天</option>
-            <option value="chat_once">单轮聊天</option>
-            <option value="auto_prompt">生成提示语模板</option>
-          </select>
-          {/* 其他组件 */}
-        </div>        
         <div className={styles['robot-thinking']}>{thinking + '.'.repeat(dots)}</div>
         <AutosizeTextarea
           className={styles['message-input']}
           value={message}
-          placeholder='询问 文成公主 - GPT4'
+          placeholder='请写出你的问题...'
           onChange={e => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />

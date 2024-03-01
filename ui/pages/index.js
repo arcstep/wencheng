@@ -9,7 +9,7 @@ const Layout = () => {
   return (
     <div className={styles.layout}>
       <div className={styles.header}>
-        <h1>大语言模型能做什么？</h1>
+        <h1>猜一猜，我能用AI帮你做什么？</h1>
       </div>
 
       <div className={styles.agents}>

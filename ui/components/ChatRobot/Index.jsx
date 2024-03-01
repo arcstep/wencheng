@@ -13,12 +13,18 @@ export default function ChatRobot({ selectedApi }) {
     setMessageSentHistory(prevHistory => [message, ...prevHistory]);
   };
 
-  const newChatSession = async () => {
+  const newChatSession = async () => {    
     const id = await chat_new()
     console.log("chatSessionId", id);
     setChatSessionId(id);
     setMessages([]);
   };
+
+  useEffect(() => {
+    if(selectedApi) {
+      console.log("api: ", selectedApi)
+    }
+  }, [selectedApi]);
 
   useEffect(() => {
     const fetchHistoryData = async () => {
@@ -38,12 +44,11 @@ export default function ChatRobot({ selectedApi }) {
 
   return (
     <div className={ styles.layout }>
-      <div className={styles.header}>@文成公主 openai, gpt4.0</div>
       <ChatHistory className={styles.history} messages={[...messages, ...streamRespondingMessage]} />
       <ChatMessageSender
         className={styles.sender}
         chatSessionId={chatSessionId}
-        newChatSession={newChatSession}
+        apiAgent={selectedApi}
         messages={messages}
         setMessages={setMessages}
         setStreamRespondingMessage={setStreamRespondingMessage}

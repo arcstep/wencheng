@@ -1,51 +1,21 @@
 import AbortController from "abort-controller";
+import { RemoteRunnable } from "@langchain/core/runnables/remote";
 
-
-export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, action = "chat", controller = null, chatSessionId = "0") {
+export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, api, controller = null, chatSessionId = "0") {
   const base_url = process.env.NEXT_PUBLIC_BASE_URL;
+  const chain = new RemoteRunnable({url: `${base_url}/${api}`});
 
-  // 如果之前的请求还没有完成，就取消它
-    if (controller !== null) {
-      controller.abort();
-    }
-  
-    // 创建一个新的 AbortController，用于取消 fetch 请求
-    controller = new AbortController();
-  
-    try {
-      const response = await fetch(`${base_url}/${action}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ question: textMessage, session_id: chatSessionId }),
-        signal: controller.signal, // 使用新的 AbortController 的 signal
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  try {
+    const response =  await chain.stream({ question: textMessage });
+    for await (const chunk of response) {
+      // 第一个chunk实际上是包含 run_id 的 object，暂不使用
+      // console.log(typeof chunk, chunk)      
+      if(typeof chunk == "string") {
+        onMessageHandler(chunk);
       }
-  
-      // 获取可读流
-      const reader = response.body.getReader();
-
-      // 读取数据
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          // 如果数据已经读取完毕，就调用 onEndHandler
-          onEndHandler();
-          break;
-        }
-
-        // 将 Uint8Array 转换为字符串
-        const text = new TextDecoder("utf-8").decode(value);
-
-        // 调用 onMessageHandler 处理数据
-        onMessageHandler(JSON.parse(text).join(""));
-      }
-    } catch (error) {
-      console.error("Fetch failed: ", error);
     }
+    onEndHandler();
+  } catch (error) {
+    console.error("Fetch failed: ", error);
+  }
 }
