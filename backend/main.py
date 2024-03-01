@@ -151,7 +151,7 @@ async def chat_create():
 @app.get("/agents")
 async def agents():
     return [
-        {"name": "清华智谱 GLM4", "api": "/agent/glm4"},
-        {"name": "OpenAI GPT4", "api": "/agent/gpt4"},
-        {"name": "OpenAI GPT3.5", "api": "/agent/gpt35"},
+        {"name": "清华智谱 GLM4", "api": "agent/glm4"},
+        {"name": "OpenAI GPT4", "api": "agent/gpt4"},
+        {"name": "OpenAI GPT3.5", "api": "agent/gpt35"},
     ]
