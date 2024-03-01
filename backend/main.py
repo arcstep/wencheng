@@ -1,21 +1,36 @@
 from fastapi import FastAPI, HTTPException
+from langchain.chains import LLMChain
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.schema.output_parser import StrOutputParser
+from langchain.memory import ConversationBufferWindowMemory
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables import (
+    ConfigurableField,
+    ConfigurableFieldSpec,
+    RunnableLambda,
+    RunnableParallel,
+    RunnablePassthrough
+    )
+from langchain_core.globals import set_debug
+from langchain_community.llms import Tongyi
 from langchain_openai import ChatOpenAI
 from langchain_zhipu import ChatZhipuAI
-from langchain_core.runnables import RunnableLambda
-from langchain.schema.output_parser import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.globals import set_debug
 from langserve import add_routes
+from langfuse.callback import CallbackHandler
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from langfuse.callback import CallbackHandler
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain_community.llms import Tongyi
+from typing import AsyncIterator, Any
 
-# 对话历史
-from backend.chat_history import create_session_factory, get_chat_history_by_session_id, create_new_chat, is_chat_session_exist
-from langchain_core.runnables.history import RunnableWithMessageHistory
+# 存储对话历史
+memoryStore = {}
+
+# 记忆提取和追加
+def get_memory(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in memoryStore:
+        memoryStore[session_id] = ChatMessageHistory()
+    return memoryStore[session_id]
 
 # 设置调试模式
 set_debug(False)
@@ -44,23 +59,36 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-parser = StrOutputParser()
+# 构造提示语
+_prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是一个强力助手，不要啰嗦。"),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{question}"),
+])
+
+# 文本解析器
+_parser = StrOutputParser()
+
+# 跟踪器
+_handler = CallbackHandler(trace_name="chat-agent", user_id="wencheng")
+
+# 构造智能体
+def create_chat_agent(llm, prompt = _prompt, parser = _parser, handler = _handler):
+    chain = RunnableWithMessageHistory(
+        prompt | llm | StrOutputParser(),
+        get_memory,
+        input_messages_key="question",
+        history_messages_key="history",
+    ).with_config({"callbacks": [handler]})
+    
+    return chain
 
 #####################################
 # GLM4 - ZhipuAI
 
 def create_zhipu():
-    handler = CallbackHandler(trace_name="zhipu_chat", user_id="wencheng")
-
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "你是一个强力助手，不要啰嗦。"),
-        ("assistant", "我是一名AI助手，请向我提问。"),
-        ("human", "{question}"),
-    ])
-
     llm = ChatZhipuAI(model="glm-4", temperature=0.01)
-    chain = (prompt | llm | StrOutputParser()).with_config({"callbacks": [handler]})
-    return chain
+    return create_chat_agent(llm)
 
 add_routes(
     app, 
@@ -72,11 +100,8 @@ add_routes(
 # GPT3
 
 def create_gpt3():
-    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template("""{question}""")
     llm = ChatOpenAI(model = "gpt-3.5-turbo-1106", streaming = True, temperature = 0.3)
-    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
-    return chain
+    return create_chat_agent(llm)
 
 add_routes(
     app,
@@ -88,52 +113,14 @@ add_routes(
 # GPT4
 
 def craete_gpt4():
-    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
-    llm = ChatOpenAI(model = "gpt-4-1106-preview", streaming = True, temperature = 0.3)
-    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
-    return chain
+    llm = ChatOpenAI(model = "gpt-4-0125-preview", streaming = True, temperature = 0.3)
+    return create_chat_agent(llm)
 
 add_routes(
     app,
     craete_gpt4(),
     enabled_endpoints=["invoke", "stream"],
     path = "/agent/gpt4")
-
-#####################################
-# QWen-plus
-
-def create_qwen():
-    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
-    llm = Tongyi(model = "qwen-plus", streaming = True, temperature = 0.3)
-    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
-    return chain
-
-add_routes(
-    app,
-    create_qwen(),
-    enabled_endpoints=["invoke", "stream"],
-    path = "/agent/tongyi")
-
-#####################################
-# ChatGLM3-6B
-
-def create_glm6b():
-    handler = CallbackHandler(trace_name="chat_once", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-        """{question}""")
-    llm = Tongyi(model_name = "chatglm3-6b", streaming = True, temperature = 0.3)
-    chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
-    return chain
-
-add_routes(
-    app,
-    create_glm6b(),
-    enabled_endpoints=["invoke", "stream"],
-    path = "/langserve/chatglm6b")
 
 #####################################
 
