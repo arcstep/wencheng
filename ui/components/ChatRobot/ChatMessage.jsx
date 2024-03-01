@@ -6,16 +6,16 @@ import styles from './ChatMessage.module.css';
 export default function ChatMessage({ className, onClick, message, handleInsertText }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  function handleCopyClick(e) {
-    e.stopPropagation();
-    navigator.clipboard.writeText(message.content)
-      .then(() => {
-        console.log('Text copied to clipboard');
-      })
-      .catch(err => {
-        console.error('Error in copying text: ', err);
-      });
-  }
+  // function handleCopyClick(e) {
+  //   e.stopPropagation();
+  //   navigator.clipboard.writeText(message.content)
+  //     .then(() => {
+  //       console.log('Text copied to clipboard');
+  //     })
+  //     .catch(err => {
+  //       console.error('Error in copying text: ', err);
+  //     });
+  // }
 
   function handleSendClick(e) {
     e.stopPropagation();
@@ -29,7 +29,7 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
 
   const getSenderIcon = (type) => {
     switch (type) {
-      case 'human':
+      case '你':
         return '/images/you.jpeg';
       default:
         return '/images/wencheng.png';
@@ -39,14 +39,8 @@ export default function ChatMessage({ className, onClick, message, handleInsertT
   return (
     <div className={[className, styles.chatMessage].join(" ")} onClick={onClick}>
       <div className={styles.messageActions}>
-        <button className={styles.copyButton} onClick={handleCopyClick}>
+        {/* <button className={styles.copyButton} onClick={handleCopyClick}>
           <FaCopy />
-        </button>
-        {/* <button className={styles.sendButton} onClick={handleSendClick}>
-          <FaPaperPlane />
-        </button>
-        <button className={styles.infoButton} onClick={handleInfoClick}>
-          <FaInfo />
         </button> */}
       </div>
       <img className={styles.avatar} src={getSenderIcon(message.type)} alt={message.type} />

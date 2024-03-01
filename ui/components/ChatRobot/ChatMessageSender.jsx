@@ -66,7 +66,7 @@ function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMe
     if (message.trim() === '') return;
  
     // 构造用户发出的消息
-    const userMessage = { type: 'human', content: message };
+    const userMessage = { type: '你', content: message };
     setStreamRespondingMessage([userMessage]);
 
     // 添加到历史消息列表，以便在按上方向键时显示
@@ -77,7 +77,7 @@ function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMe
     // 设置机器人正在请求
     setRobotIsRequesting(true);
     // 构造机器人发出的消息
-    let replyMessage = { type: 'ai', content: "" };
+    let replyMessage = { type: 'AI', content: "" };
     // 创建一个新的 AbortController
     const newController = new AbortController();
     setController(newController);
