@@ -83,20 +83,17 @@ function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMe
     setController(newController);
     try {
       // 发送请求
-      console.log("init content: ", replyMessage.content);
       await replyFromBot(
         userMessage.content,
         // 流文本结束后
         () => {
           setStreamRespondingMessage([]);
-          console.log("reply from robot(final): ", replyMessage)
           setMessages([...messages, userMessage, replyMessage]);
         },
         // 流文本增量处理
         (content) => {
           // 可以使用join("|")来调试流式效果
           replyMessage.content = [replyMessage.content, content].join("");
-          console.log("reply from robot: ", replyMessage.content)
           setStreamRespondingMessage([userMessage, replyMessage]);
         },
         apiAgent,

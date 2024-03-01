@@ -15,43 +15,6 @@
   /* 设置边框为蓝色 */
 }
 
-.messageActions {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 80px;
-  padding: 2px;
-  border-radius: 2px;
-  background-color: transparent;
-  transition: background-color 0.3s ease, visibility 0.3s ease;
-  visibility: hidden;
-  /* 默认不可见 */
-}
-
-.chatMessage:hover .messageActions {
-  visibility: visible;
-  /* 当鼠标悬停在 .chat-message 上时，.message-actions 变为可见 */
-}
-
-.copyButton,
-.sendButton,
-.infoButton {
-  color: white;
-  background-color: #999;
-  transition: background-color 0.3s ease;
-  flex-shrink: 0;
-  /* 防止按钮在 flex 容器中缩小 */
-}
-
-.copyButton:hover,
-.sendButton:hover,
-.infoButton:hover {
-  background-color: #424141;
-}
-
 .avatar {
   width: 30px;
   max-height: 30px;
