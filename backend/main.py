@@ -22,6 +22,7 @@ from langfuse.callback import CallbackHandler
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import AsyncIterator, Any
+from .chat_history import create_new_chat
 
 # 存储对话历史
 memoryStore = {}
