@@ -21,18 +21,17 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 set_debug(False)
 
 # 加载 .env 到环境变量
-import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv(), override=True)
-print("LANGFUSE_PUBLIC_KEY: ", os.getenv("LANGFUSE_PUBLIC_KEY"))
 
 # 
 app = FastAPI(
     title="Wencheng Chat Server",
     version="1.0",
-    description="Wencheng Agent server based on LLM",
+    description="我是一个能文能舞的AI智能体",
 )
 
+import os
 # origins = os.getenv("WENCHENG_CORS_ORIGINS").split(",")
 # print("CORS origins:", origins)
 
@@ -44,7 +43,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-
 
 parser = StrOutputParser()
 
@@ -67,7 +65,7 @@ def create_zhipu():
 add_routes(
     app, 
     create_zhipu(),
-    enabled_endpoints=["invoke", "stream"],
+    # enabled_endpoints=["invoke", "stream", "astream", "astream_events"],
     path = "/langserve/zhipu")
 
 #####################################
@@ -122,33 +120,6 @@ def create_glm6b():
 add_routes(app, create_glm6b(), enabled_endpoints=["invoke", "stream"], path = "/langserve/chatglm6b")
 
 #####################################
-# auto-prompt
-
-class AutoPrompt(BaseModel):
-    topic: str
-
-@app.post("/auto_prompt")
-async def auto_prompt(input: AutoPrompt):
-    handler = CallbackHandler(trace_name="auto_prompt", user_id="wencheng")
-    prompt = ChatPromptTemplate.from_template(
-    """
-        Based on the following instrutions, help me write a good 
-        prompt TEMPLATE for the following task in Chinese:
-
-        {topic}
-
-        Notably, this prompt TEMPLATE expects that additional 
-        information will be provided by the end user of the prompt 
-        you are writing. For the piece(s) of information that they 
-        are expected to provide, please write the prompt in a format 
-        where they can be formatted into as if a Python f-string.
-
-        your prompt:
-
-    """)
-    llm = ChatOpenAI(model = "gpt-3.5-turbo", streaming = True, temperature = 1)
-    chain = (prompt | llm | parser)
-    return chain.stream(input = input.dict(), config={"callbacks": [handler]})
 
 # 查询聊天历史记录的接口
 @app.get("/chat_history/{session_id}")
