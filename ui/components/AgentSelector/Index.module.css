@@ -1,0 +1,33 @@
+.alert-warning {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+}
+.agents {
+  width: 200px;
+  height: 35px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s;
+}
+
+.agents:hover {
+  background-color: #e9ecef;
+}
+
+.agents:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
