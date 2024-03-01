@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { get_agents } from '../../api/agents';
 import styles from './Index.module.css';
 
-const AgentSelector = function() {
+const AgentSelector = function({ setSelectedApi }) {
   const [agents, setAgents] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState('');
-  const [selectedApi, setSelectedApi] = useState('');
 
   useEffect(() => {
     get_agents().then(data => {
@@ -18,7 +17,7 @@ const AgentSelector = function() {
   }, []);
 
   const handleChange = (event) => {
-    const selected = agents.find(agent => agent.name === event.target.value);
+    const selected =  agents.find(agent => agent.name === event.target.value);
     setSelectedAgent(selected.name);
     setSelectedApi(selected.api);
   };

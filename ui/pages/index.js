@@ -1,10 +1,11 @@
-// components/Layout.js
 import React, { useState } from 'react';
 import styles from './index.module.css'
 import AgentSelector from '../components/AgentSelector/Index';
 import ChatRobot from '../components/ChatRobot/Index';
 
 const Layout = () => {
+  const [selectedApi, setSelectedApi] = useState('');
+
   return (
     <div className={styles.layout}>
       <div className={styles.header}>
@@ -12,11 +13,11 @@ const Layout = () => {
       </div>
 
       <div className={styles.agents}>
-        <AgentSelector/>
+        <AgentSelector setSelectedApi={setSelectedApi} />
       </div>
 
       <div className={styles.body}>
-        <ChatRobot />
+        <ChatRobot selectedApi={selectedApi} />
       </div>
     </div>
   );
