@@ -4,7 +4,7 @@ import ChatHistory from './ChatHistory';
 import { chat_history, chat_new } from '../../api/chat_history';
 import styles from './Index.module.css';
 
-export default function ChatRobot({ selectedApi }) {
+export default function ChatRobot({ selectedApi, onNewMessage }) {
   const [chatSessionId, setChatSessionId] = useState(null); // 会话 ID，用于区分不同的会话
   const [messages, setMessages] = useState([]);
   const [messageSentHistory, setMessageSentHistory] = useState(["hi", "你是文成公主吗？"]);
@@ -25,6 +25,12 @@ export default function ChatRobot({ selectedApi }) {
       console.log("api: ", selectedApi)
     }
   }, [selectedApi]);
+
+  useEffect(() => {
+    if(messages.length > 0) {
+      onNewMessage(true)
+    }
+  }, [messages])
 
   useEffect(() => {
     const fetchHistoryData = async () => {

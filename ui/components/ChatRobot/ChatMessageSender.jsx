@@ -4,18 +4,21 @@ import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
 import { replyFromBot } from '../../api/robot';
 import styles from './ChatMessageSender.module.css';
 
-function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMessages, setStreamRespondingMessage, messageSentHistory, addMessageSentToHistory }) {
+function ChatMessageSender({
+    className,
+    chatSessionId, 
+    apiAgent, 
+    messages, 
+    setMessages, 
+    setStreamRespondingMessage,
+    messageSentHistory, 
+    addMessageSentToHistory }) {
   const [message, setMessage] = useState('');
   const [robotIsRequesting, setRobotIsRequesting] = useState(false);
   const [controller, setController] = useState(null);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [thinking, setThinking] = useState('');
   const [dots, setDots] = useState(0);
-  const [robot_action, setRobotAction] = useState("chat_stream");
-
-  const handleSelectChange = (event) => {
-    setRobotAction(event.target.value);
-  };
 
   useEffect(() => {
     if (robotIsRequesting) {
@@ -49,17 +52,6 @@ function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMe
       event.preventDefault();
       handleSendClick();
     }
-  };
-  
-  const handleCancelRequest = () => {
-    // 取消请求
-    console.log("controller", controller)
-    if (controller) {
-      controller.abort();
-      console.log(controller.signal.aborted); // 这应该打印 true
-    }
-    // 设置请求状态为 false
-    setRobotIsRequesting(false);
   };
 
   const handleSendClick = async () => {
@@ -126,7 +118,7 @@ function ChatMessageSender({ className, chatSessionId, apiAgent, messages, setMe
         />
         {
           robotIsRequesting ? (
-            <button onClick={handleCancelRequest} >
+            <button>
               <FaRegStopCircle />
             </button>
           ) : (

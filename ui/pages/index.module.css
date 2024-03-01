@@ -1,9 +1,10 @@
 .layout {
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto auto 1fr;
   grid-template-areas:
-    "header"
     "agents"
+    "header"
+    "guid"
     "body";
   padding: 20px;  /* 增加填充以在内部留出空间 */
   height: 100vh;
@@ -12,29 +13,39 @@
   max-width: 1200px;  /* 限制最大宽度 */
 }
 
-.header {
-  grid-area: header;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;  /* 增加填充以在内部留出空间 */
-  background-color: #f8f9fa;  /* 添加背景色 */
-}
-
 .agents {
   grid-area: agents;
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;  /* 增加填充以在内部留出空间 */
-  background-color: #f8f9fa;  /* 添加背景色 */
+  padding: 10px;
+  background-color: #f8f9fa;
+}
+
+.header {
+  grid-area: header;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+}
+
+.guid {
+  grid-area: guid;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
 }
 
 .body {
   grid-area: body;
   overflow: auto; 
-  padding: 10px;  /* 增加填充以在内部留出空间 */
-  background-color: #f8f9fa;  /* 添加背景色 */
+  padding: 10px;
+  background-color: #f8f9fa;
 }
