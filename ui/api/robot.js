@@ -1,9 +1,10 @@
 import AbortController from "abort-controller";
 
-const base_url = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, action = "chat", controller = null, chatSessionId = "0") {
-    // 如果之前的请求还没有完成，就取消它
+  const base_url = process.env.NEXT_PUBLIC_BASE_URL;
+
+  // 如果之前的请求还没有完成，就取消它
     if (controller !== null) {
       controller.abort();
     }
