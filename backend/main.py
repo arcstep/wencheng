@@ -66,7 +66,7 @@ add_routes(
     app, 
     create_zhipu(),
     # enabled_endpoints=["invoke", "stream", "astream", "astream_events"],
-    path = "/langserve/zhipu")
+    path = "/agent/glm4")
 
 #####################################
 # GPT3
@@ -78,7 +78,11 @@ def create_gpt3():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_gpt3(), enabled_endpoints=["invoke", "stream"], path = "/langserve/gpt35")
+add_routes(
+    app,
+    create_gpt3(),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/agent/gpt35")
 
 #####################################
 # GPT4
@@ -91,7 +95,11 @@ def craete_gpt4():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, craete_gpt4(), enabled_endpoints=["invoke", "stream"], path = "/langserve/gpt4")
+add_routes(
+    app,
+    craete_gpt4(),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/agent/gpt4")
 
 #####################################
 # QWen-plus
@@ -104,7 +112,11 @@ def create_qwen():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_qwen(), enabled_endpoints=["invoke", "stream"], path = "/langserve/tongyi")
+add_routes(
+    app,
+    create_qwen(),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/agent/tongyi")
 
 #####################################
 # ChatGLM3-6B
@@ -117,7 +129,11 @@ def create_glm6b():
     chain = (prompt | llm | parser).with_config({"callbacks": [handler]})
     return chain
 
-add_routes(app, create_glm6b(), enabled_endpoints=["invoke", "stream"], path = "/langserve/chatglm6b")
+add_routes(
+    app,
+    create_glm6b(),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/langserve/chatglm6b")
 
 #####################################
 
@@ -130,3 +146,12 @@ async def chat_history(session_id: str):
 @app.post("/chat_history")
 async def chat_create():
     return create_new_chat()
+
+# 列举可用的智能体清单
+@app.get("/agents")
+async def agents():
+    return [
+        {"name": "清华智谱 GLM4", "api": "/agent/glm4"},
+        {"name": "OpenAI GPT4", "api": "/agent/gpt4"},
+        {"name": "OpenAI GPT3.5", "api": "/agent/gpt35"},
+    ]
