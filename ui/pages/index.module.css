@@ -1,11 +1,7 @@
 .layout {
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
-  grid-template-areas:
-    "agents"
-    "header"
-    "guid"
-    "body";
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas: "agents" "header" "questions" "guid" "body";
   padding: 20px;  /* 增加填充以在内部留出空间 */
   height: 100vh;
   box-sizing: border-box;  /* 确保填充和边框不会增加元素的总宽度和高度 */
@@ -31,6 +27,22 @@
   align-items: center;
   padding: 10px;
   background-color: #f8f9fa;
+}
+
+.questions {
+  grid-area: questions;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  background-color: #f8f9fa;
+}
+
+.questions span {
+  font-size: x-large;
+  /* margin: 3em 0; */
 }
 
 .guid {

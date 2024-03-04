@@ -13,15 +13,29 @@ const Layout = () => {
 
   return (
     <div className={styles.layout}>
-      <div className={styles.agents}>
-        <AgentSelector setSelectedApi={setSelectedApi} />
-      </div>
-
       {!hasHistory && (
         <div className={styles.header}>
           <h1>猜一猜，AI能做什么？</h1>
         </div>
       )}
+
+      {!hasHistory && (
+        <div className={styles.questions}>
+          <div>
+            <span>🔥 贾玲最新电影票房如何？</span>
+          </div>
+          <div>
+            <span>💰 广州有发票抽奖活动吗？</span>
+          </div>
+          <div>
+            <span>🧯 消防对值班有什么要求？</span>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.agents}>
+        <AgentSelector setSelectedApi={setSelectedApi} />
+      </div>
 
       <div className={styles.body}>
         <ChatRobot selectedApi={selectedApi} onNewMessage={handleNewMessage} />
