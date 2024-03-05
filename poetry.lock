@@ -979,13 +979,13 @@ llama-index = ["llama-index (>=0.10.12,<0.11.0)"]
 
 [[package]]
 name = "langserve"
-version = "0.0.39"
+version = "0.0.46"
 description = ""
 optional = false
 python-versions = ">=3.8.1,<4.0.0"
 files = [
-    {file = "langserve-0.0.39-py3-none-any.whl", hash = "sha256:3a8dc3af3c4a18b6867f1a32b75968035ea5ecf5481862fd9d4b51bb06f43e65"},
-    {file = "langserve-0.0.39.tar.gz", hash = "sha256:c5ab2a539e7a008ca017cbe93dd6210aca9f382989906eda307464eac7182a41"},
+    {file = "langserve-0.0.46-py3-none-any.whl", hash = "sha256:0720710b9d545394f07394f95a9f2ad294fb33359945522e7dc3b9dcdbde1d70"},
+    {file = "langserve-0.0.46.tar.gz", hash = "sha256:a914c65d9fed356361fdd0ed6c23f765d4ea641eb0173eafd0a82fce9227229e"},
 ]
 
 [package.dependencies]
@@ -2896,4 +2896,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e03074c749e39f9b53772354fc7658faf4ede78ea563c5d9f0e892a862f373a7"
+content-hash = "397b9a5e1f088d75de528bd0d2e9125ae1c900e997e7189b35aed7346ca0c617"

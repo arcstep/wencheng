@@ -94,7 +94,7 @@ def create_zhipu():
 add_routes(
     app, 
     create_zhipu(),
-    # enabled_endpoints=["invoke", "stream", "astream", "astream_events"],
+    enabled_endpoints=["invoke", "stream", "stream_events"],
     path = "/agent/glm4")
 
 #####################################
@@ -107,7 +107,7 @@ def create_gpt3():
 add_routes(
     app,
     create_gpt3(),
-    enabled_endpoints=["invoke", "stream"],
+    enabled_endpoints=["invoke", "stream", "stream_events"],
     path = "/agent/gpt35")
 
 #####################################
@@ -120,7 +120,7 @@ def craete_gpt4():
 add_routes(
     app,
     craete_gpt4(),
-    enabled_endpoints=["invoke", "stream"],
+    enabled_endpoints=["invoke", "stream", "stream_events"],
     path = "/agent/gpt4")
 
 #####################################
