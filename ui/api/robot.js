@@ -1,4 +1,3 @@
-import AbortController from "abort-controller";
 import { RemoteRunnable } from "@langchain/core/runnables/remote";
 
 export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, api, controller = null, chatSessionId = "0") {

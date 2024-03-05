@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AutosizeTextarea from 'react-autosize-textarea';
 import { FaPaperPlane, FaRegStopCircle } from 'react-icons/fa';
-import { replyFromBot } from '../../api/robot';
+import { replyFromBot } from '../../api/remote_agents';
 import styles from './ChatMessageSender.module.css';
 
 function ChatMessageSender({
