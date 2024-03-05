@@ -4,7 +4,11 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, api, controller = null, chatSessionId = "0") {
   const newController = new AbortController();
   const base_url = process.env.NEXT_PUBLIC_BASE_URL;
-  let streamChunk = "";
+
+  const abort = () => {
+    newController.abort();
+    onEndHandler();
+  }
 
   try {
     await fetchEventSource(`${base_url}/${api}/stream_events`, {
@@ -21,14 +25,16 @@ export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, 
         ]
       }),
       onopen(res) {
-        if (res.ok && res.status === 200) {
-          // console.log("Connection made ", res);
-        } else if (
+        if (
           res.status >= 400 &&
           res.status < 500 &&
           res.status !== 429
         ) {
-          // console.log("Client side error ", res);
+          console.log("Client Error ", res);
+          return(abort())
+        } else if(!res.ok || res.status != 200) {
+          console.log("Other Error ", res);
+          return(abort())
         }
       },      
       openWhenHidden: true,
@@ -38,21 +44,19 @@ export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, 
       onmessage: (msg) => {
         if (msg.event === "end") {
           console.log("END")
-          newController.abort();
-          onEndHandler(streamChunk);
-          return;
+          return(abort())
         }
         else if (msg.event === "data" && msg.data) {
           const e = JSON.parse(msg.data);
-          console.log("EVENT-DATA: ", e)
+          // console.log("EVENT-DATA: ", e)
           if(e.event == "on_chat_model_stream") {
             onMessageHandler(e.data.chunk.content);
-          } else if(e.event == "on_chat_model_end") {
-            onMessageHandler(e.data.output.generations[0][0].text);
+          } else {
+            console.log("EVENT-DATA: ", e.event)
           }
         }
         else {
-          console.log("OTHER MESSAGE：", msg)
+          console.log("UNKNOWN MESSAGE：", msg)
         }
       },
       onerror: (error) => {
@@ -62,10 +66,7 @@ export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, 
       },
     });
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log('Fetch aborted');
-    } else {
-      console.error('Fetch error: ', error);
-    }
+    console.log(error);
+    return(abort())
   }
 }
