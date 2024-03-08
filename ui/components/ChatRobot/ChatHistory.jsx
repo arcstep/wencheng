@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ChatMessage from './ChatMessage';
-import styles from './ChatHistory.module.css'
 
 function ChatHistory({ className, messages, handleInsertText }) {
   const messagesEndRef = useRef(null);

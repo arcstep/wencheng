@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ChatMessageSender from './ChatMessageSender';
 import ChatHistory from './ChatHistory';
-import { chat_history, chat_new } from '../../api/chat_history';
+import { chat_history, new_session } from '../../api/chat_history';
 import styles from './Index.module.css';
 
 export default function ChatRobot({ selectedApi, onNewMessage }) {
@@ -14,17 +14,10 @@ export default function ChatRobot({ selectedApi, onNewMessage }) {
   };
 
   const newChatSession = async () => {    
-    const id = await chat_new()
-    console.log("chatSessionId", id);
+    const id = await new_session()
     setChatSessionId(id);
     setMessages([]);
   };
-
-  useEffect(() => {
-    if(selectedApi) {
-      console.log("api: ", selectedApi)
-    }
-  }, [selectedApi]);
 
   useEffect(() => {
     if(messages.length > 0) {

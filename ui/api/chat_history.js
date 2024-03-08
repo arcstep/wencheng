@@ -5,9 +5,9 @@ async function chat_history(chatSessionId) {
   return []
 }
 
-async function chat_new() {
+async function new_session() {
   try {
-    const response = await fetch(`${base_url}/chat_history`,{
+    const response = await fetch(`${base_url}/session`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -20,4 +20,4 @@ async function chat_new() {
   }
 }
 
-export { chat_history, chat_new };
+export { chat_history, new_session };
