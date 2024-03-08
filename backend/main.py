@@ -149,6 +149,8 @@ add_routes(
     path = "/agent/gpt4")
 
 #####################################
+import datetime
+
 def create_session_id():
     now = datetime.datetime.now()
     date_time = now.strftime("%Y%m%d-%H%M%S")
