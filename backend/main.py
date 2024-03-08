@@ -67,14 +67,17 @@ _prompt = ChatPromptTemplate.from_messages([
     ("human", "{question}"),
 ])
 
-# 文本解析器
-_parser = StrOutputParser()
+_prompt_translater = ChatPromptTemplate.from_messages([
+    ("system", "你是一个翻译器，无论我说什么你都从一种语言翻译到另外一种语言。如果我说中文，你就直接回答英文翻译结果；如果我说英文，你就直接回答中文翻译结果。必须严格按照内容翻译，不要额外发挥；直接给出答案即可。"),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{question}"),
+])
 
 # 跟踪器
 _handler = CallbackHandler(trace_name="chat-agent", user_id="wencheng")
 
 # 构造智能体
-def create_chat_agent(llm, prompt = _prompt, parser = _parser, handler = _handler):
+def create_chat_agent(llm, prompt = _prompt, handler = _handler):
     chain = RunnableWithMessageHistory(
         prompt | llm | StrOutputParser(),
         get_memory,
@@ -87,7 +90,7 @@ def create_chat_agent(llm, prompt = _prompt, parser = _parser, handler = _handle
 #####################################
 # GLM4 - ZhipuAI
 
-def create_zhipu():
+def create_zhipu(prompt=_prompt):
     llm = ChatZhipuAI(model="glm-4", temperature=0.01)
     return create_chat_agent(llm)
 
@@ -96,6 +99,24 @@ add_routes(
     create_zhipu(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
     path = "/agent/glm4")
+
+# GLM - 翻译器
+
+def create_zhipu_translater():
+    llm = ChatZhipuAI(model="glm-4", temperature=0.01)
+    chain = _prompt_translater | llm | StrOutputParser()
+    return RunnableWithMessageHistory(
+        chain,
+        lambda session_id: ChatMessageHistory(),
+        input_messages_key="question",
+        history_messages_key="history",
+    ).with_config({"callbacks": [_handler]})
+
+add_routes(
+    app, 
+    create_zhipu_translater(),
+    enabled_endpoints=["invoke", "stream", "stream_events"],
+    path = "/agent/translater")
 
 #####################################
 # GPT3
@@ -113,13 +134,13 @@ add_routes(
 #####################################
 # GPT4
 
-def craete_gpt4():
+def create_gpt4():
     llm = ChatOpenAI(model = "gpt-4-0125-preview", streaming = True, temperature = 0.3)
     return create_chat_agent(llm)
 
 add_routes(
     app,
-    craete_gpt4(),
+    create_gpt4(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
     path = "/agent/gpt4")
 
@@ -142,4 +163,5 @@ async def agents():
         {"name": "清华智谱 GLM4", "api": "agent/glm4"},
         {"name": "OpenAI GPT4", "api": "agent/gpt4"},
         {"name": "OpenAI GPT3.5", "api": "agent/gpt35"},
+        {"name": "中英互译", "api": "agent/translater"},
     ]
