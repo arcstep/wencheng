@@ -19,18 +19,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import AsyncIterator, Any
 
-# 记忆管理
-from langchain_chinese import MemoryManager
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from langchain_chinese import WithMemoryBinding
-
-window = ConversationBufferWindowMemory(
-  return_messages=True, k=20, chat_memory = ChatMessageHistory()
-)
-
-memory = MemoryManager(shorterm_memory = window)
-
 # 设置调试模式
 set_debug(False)
 
@@ -58,6 +46,22 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+# 记忆管理
+from langchain_chinese import MemoryManager
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
+from langchain_chinese import WithMemoryBinding
+
+window = ConversationBufferWindowMemory(
+  return_messages=True, k=20, chat_memory = ChatMessageHistory()
+)
+memory = MemoryManager(shorterm_memory = window)
+
+window0 = ConversationBufferWindowMemory(
+  return_messages=True, k=0, chat_memory = ChatMessageHistory()
+)
+memory_window0 = MemoryManager(shorterm_memory = window)
+
 # 构造提示语
 _prompt = ChatPromptTemplate.from_messages([
     ("system", "你是一个强力助手，不要啰嗦。"),
@@ -66,7 +70,10 @@ _prompt = ChatPromptTemplate.from_messages([
 ])
 
 _prompt_translater = ChatPromptTemplate.from_messages([
-    ("system", "你是一个翻译器，无论我说什么你都从一种语言翻译到另外一种语言。如果我说中文，你就直接回答英文翻译结果；如果我说英文，你就直接回答中文翻译结果。必须严格按照内容翻译，不要额外发挥；直接给出答案即可。"),
+    ("system", 
+     """你是一个翻译器，无论我说什么你都从一种语言翻译到另外一种语言。
+     如果我说中文，你就直接回答英文翻译结果；如果我说英文，你就直接回答中文翻译结果。
+     必须严格按照内容翻译，不要额外发挥；直接给出答案即可。"""),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
 ])
@@ -103,7 +110,7 @@ def create_zhipu_translater():
     llm = ChatZhipuAI(model="glm-4", temperature=0.01)
     chain = WithMemoryBinding(
         _prompt_translater | llm | StrOutputParser(),
-        memory,
+        memory_window0,
         input_messages_key="question",
         history_messages_key="history",
     ).with_config({"callbacks": [_handler]})
