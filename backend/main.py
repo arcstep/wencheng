@@ -60,7 +60,7 @@ memory = MemoryManager(shorterm_memory = window)
 window0 = ConversationBufferWindowMemory(
   return_messages=True, k=0, chat_memory = ChatMessageHistory()
 )
-memory_window0 = MemoryManager(shorterm_memory = window)
+memory_window0 = MemoryManager(shorterm_memory = window0)
 
 # 构造提示语
 _prompt = ChatPromptTemplate.from_messages([
@@ -102,7 +102,8 @@ add_routes(
     app, 
     create_zhipu(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
-    path = "/agent/glm4")
+    path = "/agent/glm4"
+)
 
 # GLM - 翻译器
 
@@ -120,7 +121,8 @@ add_routes(
     app, 
     create_zhipu_translater(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
-    path = "/agent/translater")
+    path = "/agent/translater"
+)
 
 #####################################
 # GPT3
@@ -133,7 +135,8 @@ add_routes(
     app,
     create_gpt3(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
-    path = "/agent/gpt35")
+    path = "/agent/gpt35"
+)
 
 #####################################
 # GPT4
@@ -146,7 +149,8 @@ add_routes(
     app,
     create_gpt4(),
     enabled_endpoints=["invoke", "stream", "stream_events"],
-    path = "/agent/gpt4")
+    path = "/agent/gpt4"
+)
 
 #####################################
 import datetime
