@@ -1,7 +1,7 @@
 import AbortController from "abort-controller";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 
-export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, api, controller = null, chatSessionId = "0") {
+export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, api, controller = null, chatSessionId) {
   const newController = new AbortController();
   const base_url = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -11,18 +11,15 @@ export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, 
   }
 
   try {
-    await fetchEventSource(`${base_url}/${api}/stream_events`, {
+    await fetchEventSource(`${base_url}/${api}/stream`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "text/event-stream",
       },
       body: JSON.stringify({
-        "input": { "question": textMessage },
-        "config": { "configurable": { "session_id": chatSessionId }, "version": "v1" },
-        "include_types": [
-          "chat_model"
-        ]
+        "input": { "input": textMessage },
+        "config": { "configurable": { "session_id": chatSessionId }}
       }),
       onopen(res) {
         if (
@@ -47,13 +44,9 @@ export async function replyFromBot(textMessage, onEndHandler, onMessageHandler, 
           return(abort())
         }
         else if (msg.event === "data" && msg.data) {
+          // console.log(msg.data)
           const e = JSON.parse(msg.data);
-          // console.log("EVENT-DATA: ", e)
-          if(e.event == "on_chat_model_stream") {
-            onMessageHandler(e.data.chunk.content);
-          } else {
-            console.log("EVENT-DATA: ", e.event)
-          }
+          onMessageHandler(e.content);
         }
         else {
           console.log("UNKNOWN MESSAGE：", msg)

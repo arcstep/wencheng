@@ -22,13 +22,10 @@ const Layout = () => {
       {!hasHistory && (
         <div className={styles.questions}>
           <div>
-            <span>🔥 贾玲最新电影票房如何？</span>
+            <span>💦 宿舍需要设置喷淋吗？</span>
           </div>
           <div>
-            <span>💰 广州有发票抽奖活动吗？</span>
-          </div>
-          <div>
-            <span>🧯 消防对值班有什么要求？</span>
+            <span>🧯 消防值班有什么要求？</span>
           </div>
         </div>
       )}
