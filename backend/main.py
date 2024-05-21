@@ -51,7 +51,7 @@ memory = MemoryManager()
 # QA Chain
 def create_qa_chain():
     llm = ChatZhipuAI()
-    prompt = load_chat_prompt("qa", "xiaofang", user_id="public", in_memory=False)
+    prompt = load_chat_prompt("qa", project_id="default", user_id="public", in_memory=False)
     chain = {
         "context":  (lambda x: x['input']) | retriever | format_qa_docs,
         "question": lambda x: x['input'],

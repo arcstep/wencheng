@@ -15,7 +15,7 @@ const Layout = () => {
     <div className={styles.layout}>
       {!hasHistory && (
         <div className={styles.header}>
-          <h1>猜一猜，AI能做什么？</h1>
+          <h1>我是AI助手，猜猜我能为你做什么？</h1>
         </div>
       )}
 
