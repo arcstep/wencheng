@@ -4,26 +4,23 @@ load_dotenv(find_dotenv(), override=True)
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_zhipu import ChatZhipuAI
+from langserve import add_routes
 
-from textlong import format_qa_docs, QAExcelsLoader
-from textlong.prompts import create_qa_prompt, load_chat_prompt
-from textlong.memory import MemoryManager, WithMemoryBinding
-
-# 设置调试模式
-from langchain_core.globals import set_debug
-set_debug(False)
+from langchain_zhipu import ChatZhipuAI, ZhipuAIEmbeddings
+from textlong.memory import MemoryManager
+from textlong.chain import create_qa_chain
+from textlong.knowledge import LocalFilesLoader
+from textlong.project import Project, list_projects, init_project, is_project_existing
 
 import datetime
 import random
 
 # fastapi
 app = FastAPI(
-    title="Wencheng Chat Server",
+    title="基于AI创作长文本",
     version="1.0",
-    description="我是一个能文能舞的AI智能体",
+    description="利用先进的文本生成技术，轻松创作和编辑长篇文本",
 )
 
 app.add_middleware(
@@ -35,37 +32,13 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# 向量编码
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+p = Project(llm=ChatZhipuAI(), project_id="汇报资料")
 
-# QA文档加载
-docs = QAExcelsLoader(user_id="public").load()
-
-# 入库
-db = FAISS.from_documents(docs, embeddings)
-retriever = db.as_retriever()
-
-# 记忆
-memory = MemoryManager()
-
-# QA Chain
-def create_qa_chain():
-    llm = ChatZhipuAI()
-    prompt = load_chat_prompt("qa", project_id="default", user_id="public", in_memory=False)
-    chain = {
-        "context":  (lambda x: x['input']) | retriever | format_qa_docs,
-        "question": lambda x: x['input'],
-        "history":  lambda x: x['history'],
-    } | prompt | llm
-
-    return WithMemoryBinding(chain, memory)
-
-from langserve import add_routes
 add_routes(
     app,
-    create_qa_chain(),
-    enabled_endpoints=["invoke", "stream", "stream_events"],
-    path = "/agent/qa"
+    p.create_idea_chain(output_file="mydoc.md"),
+    enabled_endpoints=["invoke", "stream"],
+    path = "/agent/idea"
 )
 
 # 创建新的对话轮次
